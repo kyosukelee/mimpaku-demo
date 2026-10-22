@@ -1,0 +1,31 @@
+---
+import { property, LANGS } from "../../../i18n";
+export function getStaticPaths() {
+  return [{ params: { slug: property.slug } }];
+}
+const base = "/p/" + property.slug + "/";
+---
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex" />
+    <title>{property.name.ja}</title>
+    <script is:inline define:vars={{ base }}>
+      var lang = "";
+      try { lang = localStorage.getItem("lang") || ""; } catch (e) {}
+      if (lang !== "ja" && lang !== "en") {
+        var n = (navigator.language || "en").toLowerCase();
+        lang = n.indexOf("ja") === 0 ? "ja" : "en";
+      }
+      location.replace(base + lang + "/");
+    </script>
+  </head>
+  <body style="font-family:sans-serif;padding:24px;line-height:1.8">
+    <p>{property.name.ja} / {property.name.en}</p>
+    <ul>
+      {LANGS.map((l) => <li><a href={base + l + "/"}>{l === "ja" ? "日本語" : "English"}</a></li>)}
+    </ul>
+  </body>
+</html>

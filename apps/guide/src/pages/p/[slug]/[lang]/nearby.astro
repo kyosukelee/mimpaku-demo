@@ -1,0 +1,18 @@
+---
+import Guide from "../../../../layouts/Guide.astro";
+import { t, property, paths, mapUrl } from "../../../../i18n";
+import type { Lang } from "../../../../i18n";
+export const getStaticPaths = paths;
+const lang = Astro.params.lang as Lang;
+const s = t(lang);
+---
+<Guide lang={lang} page="nearby" title={s.menu.nearby}>
+  <h1 class="page">{s.menu.nearby}</h1>
+  {property.nearby.map((p: any) => (
+    <section class="place">
+      <h2>{p.name[lang]}</h2>
+      <p>{p.body[lang]}</p>
+      <a class="btn ghost" href={mapUrl(p.query)} target="_blank" rel="noopener">{s.openMap}</a>
+    </section>
+  ))}
+</Guide>

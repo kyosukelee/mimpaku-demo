@@ -1,0 +1,33 @@
+---
+import Guide from "../../../../layouts/Guide.astro";
+import { t, property, paths } from "../../../../i18n";
+import type { Lang } from "../../../../i18n";
+export const getStaticPaths = paths;
+const lang = Astro.params.lang as Lang;
+const s = t(lang);
+const h = property.help;
+const tel = property.emergency.phone.replace(/-/g, "");
+---
+<Guide lang={lang} page="help" title={s.menu.help}>
+  <h1 class="page">{s.menu.help}</h1>
+
+  <section class="urgent">
+    <h2>{h.urgent.title[lang]}</h2>
+    <p>{h.urgent.body[lang]}</p>
+  </section>
+
+  <h2>{s.emergencyTitle}</h2>
+  <div class="panel">
+    <dl><dd>{property.emergency.phone}</dd></dl>
+    <p style="margin:0;font-size:16px">{property.emergency.note[lang]}</p>
+  </div>
+  <p><a class="btn" href={"tel:" + tel}>{s.callEmergency}</a></p>
+
+  <h2>{s.faqTitle}</h2>
+  {h.faq.map((f: any) => (
+    <details>
+      <summary>{f.q[lang]}</summary>
+      <p>{f.a[lang]}</p>
+    </details>
+  ))}
+</Guide>

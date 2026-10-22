@@ -1,0 +1,66 @@
+{
+  "ja": {
+    "lang": "ja",
+    "langName": "日本語",
+    "demo": "デモ",
+    "demoNotice": "これはデモです。物件・番号・連絡先はすべて架空です。",
+    "checkIn": "チェックイン",
+    "checkOut": "チェックアウト",
+    "menu": {
+      "home": "トップ",
+      "checkin": "チェックイン案内",
+      "nearby": "周辺案内",
+      "help": "困ったとき"
+    },
+    "menuShort": {
+      "home": "トップ",
+      "checkin": "入室",
+      "nearby": "周辺",
+      "help": "困った"
+    },
+    "homeLead": "ご到着前に、こちらをご確認ください。",
+    "openMap": "Googleマップで開く",
+    "wifiName": "Wi-Fi名",
+    "wifiPassword": "パスワード",
+    "copy": "コピー",
+    "copied": "コピーしました",
+    "callEmergency": "緊急連絡先に電話する",
+    "emergencyTitle": "緊急連絡先",
+    "faqTitle": "よくある質問",
+    "switchTo": "English",
+    "switchLabel": "Switch to English",
+    "skip": "本文へ移動"
+  },
+  "en": {
+    "lang": "en",
+    "langName": "English",
+    "demo": "Demo",
+    "demoNotice": "This is a demo. The property, codes, and contacts are all fictional.",
+    "checkIn": "Check-in",
+    "checkOut": "Check-out",
+    "menu": {
+      "home": "Home",
+      "checkin": "Check-in guide",
+      "nearby": "Nearby",
+      "help": "Need help"
+    },
+    "menuShort": {
+      "home": "Home",
+      "checkin": "Check-in",
+      "nearby": "Nearby",
+      "help": "Help"
+    },
+    "homeLead": "Please read this before you arrive.",
+    "openMap": "Open in Google Maps",
+    "wifiName": "Wi-Fi name",
+    "wifiPassword": "Password",
+    "copy": "Copy",
+    "copied": "Copied",
+    "callEmergency": "Call the emergency contact",
+    "emergencyTitle": "Emergency contact",
+    "faqTitle": "Frequently asked questions",
+    "switchTo": "日本語",
+    "switchLabel": "日本語に切り替える",
+    "skip": "Skip to content"
+  }
+}

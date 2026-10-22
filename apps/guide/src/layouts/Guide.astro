@@ -1,0 +1,77 @@
+---
+import "../styles/global.css";
+import { t, property, pageUrl, otherLang, PAGES } from "../i18n";
+import type { Lang, Page } from "../i18n";
+interface Props { lang: Lang; page: Page; title?: string; }
+const { lang, page, title } = Astro.props;
+const s = t(lang);
+const other = otherLang(lang);
+const docTitle = (title ? title + " | " : "") + property.name[lang];
+const icons: Record<Page, string> = {
+  home: "M3 11l9-8 9 8M5 10v10h14V10",
+  checkin: "M15 3h4v18h-4M3 12h12m0 0l-4-4m4 4l-4 4",
+  nearby: "M12 21s-7-6.2-7-11a7 7 0 1114 0c0 4.8-7 11-7 11zM12 12a2.5 2.5 0 100-5 2.5 2.5 0 000 5z",
+  help: "M12 22a10 10 0 100-20 10 10 0 000 20zM9.5 9a2.5 2.5 0 114 2c-.9.6-1.5 1.1-1.5 2.2M12 17h.01",
+};
+---
+<!doctype html>
+<html lang={lang}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="robots" content="noindex" />
+    <meta name="theme-color" content="#0a4a73" />
+    <title>{docTitle}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@400;700&display=swap" rel="stylesheet" />
+    <link rel="alternate" hreflang={other} href={pageUrl(other, page)} />
+  </head>
+  <body>
+    <a class="skip" href="#main">{s.skip}</a>
+    <header class="top">
+      <div class="wrap">
+        <a class="brand" href={pageUrl(lang, "home")}>{property.name[lang]}</a>
+        <a class="lang" href={pageUrl(other, page)} hreflang={other} lang={other} aria-label={s.switchLabel} data-lang={other}>{s.switchTo}</a>
+      </div>
+    </header>
+    <div class="notice"><div class="wrap"><b>{s.demo}</b>{s.demoNotice}</div></div>
+    <slot name="hero" />
+    <main id="main" class="wrap">
+      <slot />
+    </main>
+    <nav class="nav" aria-label={lang === "ja" ? "メニュー" : "Menu"}>
+      <ul>
+        {PAGES.map((p) => (
+          <li>
+            <a href={pageUrl(lang, p)} aria-current={p === page ? "page" : undefined}>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d={icons[p]} /></svg>
+              <span>{s.menuShort[p]}</span>
+            </a>
+          </li>
+        ))}
+      </ul>
+    </nav>
+    <script is:inline>
+      document.querySelectorAll("a.lang").forEach(function (a) {
+        a.addEventListener("click", function () {
+          try { localStorage.setItem("lang", a.dataset.lang); } catch (e) {}
+        });
+      });
+      document.querySelectorAll("button.copy").forEach(function (b) {
+        b.addEventListener("click", function () {
+          var text = b.dataset.text || "";
+          var done = function () {
+            var old = b.textContent;
+            b.textContent = b.dataset.label || "OK";
+            b.dataset.done = "true";
+            setTimeout(function () { b.textContent = old; b.dataset.done = "false"; }, 1600);
+          };
+          if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(text).then(done, function () {});
+          }
+        });
+      });
+    </script>
+  </body>
+</html>
