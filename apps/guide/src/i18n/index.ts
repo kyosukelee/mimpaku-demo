@@ -1,21 +1,17 @@
 import ui from "./ui.json";
-import property from "../../../../data/property.json";
+import { staticData } from "../lib/staticData";
+import type { Lang, Page } from "../lib/guide";
 
-export const LANGS = ["ja", "en"] as const;
-export type Lang = (typeof LANGS)[number];
-export type Page = "home" | "checkin" | "nearby" | "help";
+export const LANGS: Lang[] = ["ja", "en"];
 export const PAGES: Page[] = ["home", "checkin", "nearby", "help"];
+export type { Lang, Page };
 
 export const t = (lang: Lang) => ui[lang];
-export { property };
+export const slug = staticData.property.slug;
 
-export const pageUrl = (lang: Lang, page: Page) =>
-  `/p/${property.slug}/${lang}/${page === "home" ? "" : page + "/"}`;
+export const pageUrl = (lang: Lang, page: Page, s: string = slug) =>
+  `/p/${s}/${lang}/${page === "home" ? "" : page + "/"}`;
 
 export const otherLang = (lang: Lang): Lang => (lang === "ja" ? "en" : "ja");
 
-export const mapUrl = (query: string) =>
-  `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(query)}`;
-
-export const paths = () =>
-  LANGS.map((lang) => ({ params: { slug: property.slug, lang } }));
+export const paths = () => LANGS.map((lang) => ({ params: { slug, lang } }));

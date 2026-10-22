@@ -1,35 +1,14 @@
 ---
 import Guide from "../../../../layouts/Guide.astro";
-import { t, property, paths } from "../../../../i18n";
-import type { Lang } from "../../../../i18n";
+import { t, paths } from "../../../../i18n";
+import { renderPage } from "../../../../lib/render";
+import { staticData } from "../../../../lib/staticData";
+import type { Lang } from "../../../../lib/guide";
 export const getStaticPaths = paths;
 const lang = Astro.params.lang as Lang;
 const s = t(lang);
-const c = property.checkin;
+const out = renderPage("checkin", lang, staticData);
 ---
 <Guide lang={lang} page="checkin" title={s.menu.checkin}>
-  <h1 class="page">{s.menu.checkin}</h1>
-
-  <h2>{c.key.title[lang]}</h2>
-  <ol class="steps">
-    {c.key.steps[lang].map((step: string) => <li>{step}</li>)}
-  </ol>
-
-  <h2>{c.wifi.title[lang]}</h2>
-  <div class="panel">
-    <dl>
-      <dt>{s.wifiName}</dt>
-      <dd class="row"><span>{c.wifi.ssid}</span><button class="copy" type="button" data-text={c.wifi.ssid} data-label={s.copied}>{s.copy}</button></dd>
-      <dt>{s.wifiPassword}</dt>
-      <dd class="row"><span>{c.wifi.password}</span><button class="copy" type="button" data-text={c.wifi.password} data-label={s.copied}>{s.copy}</button></dd>
-    </dl>
-  </div>
-
-  <h2>{c.rules.title[lang]}</h2>
-  <ul class="rules">
-    {c.rules.items[lang].map((r: string) => <li>{r}</li>)}
-  </ul>
-
-  <h2>{c.garbage.title[lang]}</h2>
-  <p>{c.garbage.body[lang]}</p>
+  <div id="content" set:html={out.main} />
 </Guide>

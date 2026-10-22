@@ -1,12 +1,15 @@
 ---
 import "../styles/global.css";
-import { t, property, pageUrl, otherLang, PAGES } from "../i18n";
+import { t, slug, pageUrl, otherLang, PAGES } from "../i18n";
 import type { Lang, Page } from "../i18n";
+import { staticData } from "../lib/staticData";
 interface Props { lang: Lang; page: Page; title?: string; }
 const { lang, page, title } = Astro.props;
 const s = t(lang);
 const other = otherLang(lang);
-const docTitle = (title ? title + " | " : "") + property.name[lang];
+const property = staticData.property;
+const propName = lang === "en" ? property.name_en || property.name_ja : property.name_ja;
+const docTitle = (title ? title + " | " : "") + propName;
 const icons: Record<Page, string> = {
   home: "M3 11l9-8 9 8M5 10v10h14V10",
   checkin: "M15 3h4v18h-4M3 12h12m0 0l-4-4m4 4l-4 4",
@@ -27,11 +30,11 @@ const icons: Record<Page, string> = {
     <link href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@400;700&display=swap" rel="stylesheet" />
     <link rel="alternate" hreflang={other} href={pageUrl(other, page)} />
   </head>
-  <body>
+  <body data-slug={slug} data-lang={lang} data-page={page} data-title={title ?? ""}>
     <a class="skip" href="#main">{s.skip}</a>
     <header class="top">
       <div class="wrap">
-        <a class="brand" href={pageUrl(lang, "home")}>{property.name[lang]}</a>
+        <a class="brand" href={pageUrl(lang, "home")}>{propName}</a>
         <a class="lang" href={pageUrl(other, page)} hreflang={other} lang={other} aria-label={s.switchLabel} data-lang={other}>{s.switchTo}</a>
       </div>
     </header>
@@ -53,25 +56,28 @@ const icons: Record<Page, string> = {
       </ul>
     </nav>
     <script is:inline>
-      document.querySelectorAll("a.lang").forEach(function (a) {
-        a.addEventListener("click", function () {
-          try { localStorage.setItem("lang", a.dataset.lang); } catch (e) {}
-        });
+      document.addEventListener("click", function (e) {
+        var lang = e.target.closest && e.target.closest("a.lang");
+        if (lang) {
+          try { localStorage.setItem("lang", lang.dataset.lang); } catch (err) {}
+          return;
+        }
+        var b = e.target.closest && e.target.closest("button.copy");
+        if (!b) return;
+        var text = b.dataset.text || "";
+        var done = function () {
+          var old = b.textContent;
+          b.textContent = b.dataset.label || "OK";
+          b.dataset.done = "true";
+          setTimeout(function () { b.textContent = old; b.dataset.done = "false"; }, 1600);
+        };
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(text).then(done, function () {});
+        }
       });
-      document.querySelectorAll("button.copy").forEach(function (b) {
-        b.addEventListener("click", function () {
-          var text = b.dataset.text || "";
-          var done = function () {
-            var old = b.textContent;
-            b.textContent = b.dataset.label || "OK";
-            b.dataset.done = "true";
-            setTimeout(function () { b.textContent = old; b.dataset.done = "false"; }, 1600);
-          };
-          if (navigator.clipboard && navigator.clipboard.writeText) {
-            navigator.clipboard.writeText(text).then(done, function () {});
-          }
-        });
-      });
+    </script>
+    <script>
+      import "../scripts/guide-client";
     </script>
   </body>
 </html>

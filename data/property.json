@@ -1,161 +1,199 @@
 {
-  "slug": "hiroshima-demo",
-  "name": { "ja": "ステイ中区(デモ)", "en": "Stay Naka-ku (Demo)" },
-  "tagline": {
-    "ja": "広島の中心で過ごす、マンションの一室",
-    "en": "An apartment in the heart of Hiroshima"
+  "property": {
+    "slug": "hiroshima-demo",
+    "name_ja": "ステイ中区(デモ)",
+    "name_en": "Stay Naka-ku (Demo)",
+    "tagline_ja": "広島の中心で過ごす、マンションの一室",
+    "tagline_en": "An apartment in the heart of Hiroshima",
+    "area_ja": "広島市中区",
+    "area_en": "Naka-ku, Hiroshima",
+    "check_in": "15:00",
+    "check_out": "10:00",
+    "emergency_phone": "000-0000-0000",
+    "emergency_note_ja": "管理担当(デモ用の架空の番号です)。受付は24時間。",
+    "emergency_note_en": "Property manager (a fictional number for this demo). Available 24 hours.",
+    "is_published": true
   },
-  "area": { "ja": "広島市中区", "en": "Naka-ku, Hiroshima" },
-  "checkIn": "15:00",
-  "checkOut": "10:00",
-  "emergency": {
-    "phone": "000-0000-0000",
-    "note": {
-      "ja": "管理担当(デモ用の架空の番号です)。受付は24時間。",
-      "en": "Property manager (a fictional number for this demo). Available 24 hours."
+  "items": [
+    {
+      "category": "checkin",
+      "display": "steps",
+      "sort_order": 10,
+      "title_ja": "鍵の受け取り",
+      "title_en": "Getting in",
+      "body_ja": "建物の入口で、部屋番号の呼び出しは不要です。そのまま中へお進みください。\n玄関ドアの横に黒いキーボックスがあります。\n暗証番号「0000」(デモ用)を入れて、鍵を取り出してください。\nチェックアウトのときは、鍵をキーボックスに戻してください。",
+      "body_en": "You do not need to ring the bell at the building entrance. Please go straight in.\nThere is a black key box next to the front door.\nEnter the code “0000” (demo only) and take out the key.\nAt check-out, put the key back in the key box.",
+      "map_query": null,
+      "requires_code": false,
+      "is_published": true
+    },
+    {
+      "category": "checkin",
+      "display": "keyvalue",
+      "sort_order": 20,
+      "title_ja": "Wi-Fi",
+      "title_en": "Wi-Fi",
+      "body_ja": "Wi-Fi名: StayNaka-Demo\nパスワード: demo-wifi-0000",
+      "body_en": "Wi-Fi name: StayNaka-Demo\nPassword: demo-wifi-0000",
+      "map_query": null,
+      "requires_code": false,
+      "is_published": true
+    },
+    {
+      "category": "checkin",
+      "display": "bullets",
+      "sort_order": 30,
+      "title_ja": "家のルール",
+      "title_en": "House rules",
+      "body_ja": "22時から朝8時までは、お静かにお過ごしください。\n室内は禁煙です。\nご案内の人数を超えての宿泊はできません。\nお出かけのときは、窓と玄関の鍵を閉めてください。",
+      "body_en": "Please keep quiet between 10 pm and 8 am.\nSmoking is not allowed inside.\nOnly the registered number of guests may stay.\nWhen you go out, please close the windows and lock the front door.",
+      "map_query": null,
+      "requires_code": false,
+      "is_published": true
+    },
+    {
+      "category": "checkin",
+      "display": "text",
+      "sort_order": 40,
+      "title_ja": "ゴミの出し方",
+      "title_en": "Taking out the trash",
+      "body_ja": "キッチンの袋に「燃えるゴミ」「プラスチック」「ビン・缶」を分けてください。退出時に、玄関横の青いボックスへ入れてください。",
+      "body_en": "Please sort trash in the kitchen into burnable, plastic, and bottles and cans. When you leave, put the bags in the blue box next to the front door.",
+      "map_query": null,
+      "requires_code": false,
+      "is_published": true
+    },
+    {
+      "category": "nearby",
+      "display": "text",
+      "sort_order": 50,
+      "title_ja": "平和記念公園",
+      "title_en": "Peace Memorial Park",
+      "body_ja": "原爆資料館や慰霊碑がある公園です。徒歩で行けます(約15分、デモ用の目安)。",
+      "body_en": "A park with the Peace Memorial Museum and memorials. Reachable on foot (about 15 minutes, a demo estimate).",
+      "map_query": "平和記念公園 広島",
+      "requires_code": false,
+      "is_published": true
+    },
+    {
+      "category": "nearby",
+      "display": "text",
+      "sort_order": 60,
+      "title_ja": "原爆ドーム",
+      "title_en": "Atomic Bomb Dome",
+      "body_ja": "平和記念公園の近くにあります。徒歩で行けます(約15分、デモ用の目安)。",
+      "body_en": "Close to Peace Memorial Park. Reachable on foot (about 15 minutes, a demo estimate).",
+      "map_query": "原爆ドーム 広島",
+      "requires_code": false,
+      "is_published": true
+    },
+    {
+      "category": "nearby",
+      "display": "text",
+      "sort_order": 70,
+      "title_ja": "広島駅",
+      "title_en": "Hiroshima Station",
+      "body_ja": "新幹線やJRの駅です。路面電車で行けます(約20分、デモ用の目安)。",
+      "body_en": "The Shinkansen and JR station. Take the streetcar (about 20 minutes, a demo estimate).",
+      "map_query": "広島駅",
+      "requires_code": false,
+      "is_published": true
+    },
+    {
+      "category": "nearby",
+      "display": "text",
+      "sort_order": 80,
+      "title_ja": "宮島",
+      "title_en": "Miyajima",
+      "body_ja": "広島駅からJRとフェリーで行きます(約1時間)。海に立つ大鳥居で有名です。",
+      "body_en": "Take the JR line and a ferry from Hiroshima Station (about 1 hour). Famous for the great torii gate in the sea.",
+      "map_query": "宮島 広島",
+      "requires_code": false,
+      "is_published": true
+    },
+    {
+      "category": "nearby",
+      "display": "text",
+      "sort_order": 90,
+      "title_ja": "コンビニ",
+      "title_en": "Convenience store",
+      "body_ja": "建物から徒歩3分のところにあります(デモ用の目安)。",
+      "body_en": "A 3-minute walk from the building (a demo estimate).",
+      "map_query": "コンビニ 広島市中区",
+      "requires_code": false,
+      "is_published": true
+    },
+    {
+      "category": "nearby",
+      "display": "text",
+      "sort_order": 100,
+      "title_ja": "お好み焼き店が多いエリア",
+      "title_en": "Okonomiyaki area",
+      "body_ja": "広島のお好み焼きを食べたいときは、中区の繁華街に店が集まっています。",
+      "body_en": "If you want Hiroshima-style okonomiyaki, many restaurants are gathered in the downtown part of Naka-ku.",
+      "map_query": "お好み焼き 広島市中区",
+      "requires_code": false,
+      "is_published": true
+    },
+    {
+      "category": "faq",
+      "display": "text",
+      "sort_order": 110,
+      "title_ja": "鍵が開かないとき",
+      "title_en": "The key box will not open",
+      "body_ja": "暗証番号を、ゆっくりもう一度入れてください。それでも開かないときは、緊急連絡先にお電話ください。",
+      "body_en": "Enter the code again, slowly. If it still does not open, please call the emergency contact.",
+      "map_query": null,
+      "requires_code": false,
+      "is_published": true
+    },
+    {
+      "category": "faq",
+      "display": "text",
+      "sort_order": 120,
+      "title_ja": "Wi-Fiがつながらないとき",
+      "title_en": "The Wi-Fi does not connect",
+      "body_ja": "ルーターの電源を入れ直してください。ルーターはテレビの横にあります。",
+      "body_en": "Turn the router off and on again. The router is next to the TV.",
+      "map_query": null,
+      "requires_code": false,
+      "is_published": true
+    },
+    {
+      "category": "faq",
+      "display": "text",
+      "sort_order": 130,
+      "title_ja": "荷物を預けたいとき",
+      "title_en": "I want to leave my luggage",
+      "body_ja": "チェックイン前とチェックアウト後の荷物の預かりは、事前にご相談ください。緊急連絡先までご連絡ください。",
+      "body_en": "Please ask in advance about leaving luggage before check-in or after check-out. Contact the emergency number.",
+      "map_query": null,
+      "requires_code": false,
+      "is_published": true
+    },
+    {
+      "category": "faq",
+      "display": "text",
+      "sort_order": 140,
+      "title_ja": "チェックアウトのとき",
+      "title_en": "At check-out",
+      "body_ja": "10時までに、ゴミをまとめ、窓を閉め、鍵をキーボックスに戻してください。",
+      "body_en": "By 10 am, gather the trash, close the windows, and return the key to the key box.",
+      "map_query": null,
+      "requires_code": false,
+      "is_published": true
+    },
+    {
+      "category": "urgent",
+      "display": "text",
+      "sort_order": 150,
+      "title_ja": "緊急のとき",
+      "title_en": "In an emergency",
+      "body_ja": "けが、病気、火事のときは、まず119番へ。事件や事故のときは110番へ。そのあとで、緊急連絡先にもお知らせください。",
+      "body_en": "For injury, illness, or fire, call 119 first. For crime or accidents, call 110. Then also tell the emergency contact.",
+      "map_query": null,
+      "requires_code": false,
+      "is_published": true
     }
-  },
-  "checkin": {
-    "key": {
-      "title": { "ja": "鍵の受け取り", "en": "Getting in" },
-      "steps": {
-        "ja": [
-          "建物の入口で、部屋番号の呼び出しは不要です。そのまま中へお進みください。",
-          "玄関ドアの横に黒いキーボックスがあります。",
-          "暗証番号「0000」(デモ用)を入れて、鍵を取り出してください。",
-          "チェックアウトのときは、鍵をキーボックスに戻してください。"
-        ],
-        "en": [
-          "You do not need to ring the bell at the building entrance. Please go straight in.",
-          "There is a black key box next to the front door.",
-          "Enter the code “0000” (demo only) and take out the key.",
-          "At check-out, put the key back in the key box."
-        ]
-      }
-    },
-    "wifi": {
-      "title": { "ja": "Wi-Fi", "en": "Wi-Fi" },
-      "ssid": "StayNaka-Demo",
-      "password": "demo-wifi-0000"
-    },
-    "rules": {
-      "title": { "ja": "家のルール", "en": "House rules" },
-      "items": {
-        "ja": [
-          "22時から朝8時までは、お静かにお過ごしください。",
-          "室内は禁煙です。",
-          "ご案内の人数を超えての宿泊はできません。",
-          "お出かけのときは、窓と玄関の鍵を閉めてください。"
-        ],
-        "en": [
-          "Please keep quiet between 10 pm and 8 am.",
-          "Smoking is not allowed inside.",
-          "Only the registered number of guests may stay.",
-          "When you go out, please close the windows and lock the front door."
-        ]
-      }
-    },
-    "garbage": {
-      "title": { "ja": "ゴミの出し方", "en": "Taking out the trash" },
-      "body": {
-        "ja": "キッチンの袋に「燃えるゴミ」「プラスチック」「ビン・缶」を分けてください。退出時に、玄関横の青いボックスへ入れてください。",
-        "en": "Please sort trash in the kitchen into burnable, plastic, and bottles and cans. When you leave, put the bags in the blue box next to the front door."
-      }
-    }
-  },
-  "nearby": [
-    {
-      "id": "peace-park",
-      "name": { "ja": "平和記念公園", "en": "Peace Memorial Park" },
-      "body": {
-        "ja": "原爆資料館や慰霊碑がある公園です。徒歩で行けます(約15分、デモ用の目安)。",
-        "en": "A park with the Peace Memorial Museum and memorials. Reachable on foot (about 15 minutes, a demo estimate)."
-      },
-      "query": "平和記念公園 広島"
-    },
-    {
-      "id": "genbaku-dome",
-      "name": { "ja": "原爆ドーム", "en": "Atomic Bomb Dome" },
-      "body": {
-        "ja": "平和記念公園の近くにあります。徒歩で行けます(約15分、デモ用の目安)。",
-        "en": "Close to Peace Memorial Park. Reachable on foot (about 15 minutes, a demo estimate)."
-      },
-      "query": "原爆ドーム 広島"
-    },
-    {
-      "id": "hiroshima-station",
-      "name": { "ja": "広島駅", "en": "Hiroshima Station" },
-      "body": {
-        "ja": "新幹線やJRの駅です。路面電車で行けます(約20分、デモ用の目安)。",
-        "en": "The Shinkansen and JR station. Take the streetcar (about 20 minutes, a demo estimate)."
-      },
-      "query": "広島駅"
-    },
-    {
-      "id": "miyajima",
-      "name": { "ja": "宮島", "en": "Miyajima" },
-      "body": {
-        "ja": "広島駅からJRとフェリーで行きます(約1時間)。海に立つ大鳥居で有名です。",
-        "en": "Take the JR line and a ferry from Hiroshima Station (about 1 hour). Famous for the great torii gate in the sea."
-      },
-      "query": "宮島 広島"
-    },
-    {
-      "id": "convenience-store",
-      "name": { "ja": "コンビニ", "en": "Convenience store" },
-      "body": {
-        "ja": "建物から徒歩3分のところにあります(デモ用の目安)。",
-        "en": "A 3-minute walk from the building (a demo estimate)."
-      },
-      "query": "コンビニ 広島市中区"
-    },
-    {
-      "id": "okonomiyaki-area",
-      "name": { "ja": "お好み焼き店が多いエリア", "en": "Okonomiyaki area" },
-      "body": {
-        "ja": "広島のお好み焼きを食べたいときは、中区の繁華街に店が集まっています。",
-        "en": "If you want Hiroshima-style okonomiyaki, many restaurants are gathered in the downtown part of Naka-ku."
-      },
-      "query": "お好み焼き 広島市中区"
-    }
-  ],
-  "help": {
-    "faq": [
-      {
-        "q": { "ja": "鍵が開かないとき", "en": "The key box will not open" },
-        "a": {
-          "ja": "暗証番号を、ゆっくりもう一度入れてください。それでも開かないときは、緊急連絡先にお電話ください。",
-          "en": "Enter the code again, slowly. If it still does not open, please call the emergency contact."
-        }
-      },
-      {
-        "q": { "ja": "Wi-Fiがつながらないとき", "en": "The Wi-Fi does not connect" },
-        "a": {
-          "ja": "ルーターの電源を入れ直してください。ルーターはテレビの横にあります。",
-          "en": "Turn the router off and on again. The router is next to the TV."
-        }
-      },
-      {
-        "q": { "ja": "荷物を預けたいとき", "en": "I want to leave my luggage" },
-        "a": {
-          "ja": "チェックイン前とチェックアウト後の荷物の預かりは、事前にご相談ください。緊急連絡先までご連絡ください。",
-          "en": "Please ask in advance about leaving luggage before check-in or after check-out. Contact the emergency number."
-        }
-      },
-      {
-        "q": { "ja": "チェックアウトのとき", "en": "At check-out" },
-        "a": {
-          "ja": "10時までに、ゴミをまとめ、窓を閉め、鍵をキーボックスに戻してください。",
-          "en": "By 10 am, gather the trash, close the windows, and return the key to the key box."
-        }
-      }
-    ],
-    "urgent": {
-      "title": { "ja": "緊急のとき", "en": "In an emergency" },
-      "body": {
-        "ja": "けが、病気、火事のときは、まず119番へ。事件や事故のときは110番へ。そのあとで、緊急連絡先にもお知らせください。",
-        "en": "For injury, illness, or fire, call 119 first. For crime or accidents, call 110. Then also tell the emergency contact."
-      }
-    }
-  }
+  ]
 }
