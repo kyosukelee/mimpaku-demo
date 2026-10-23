@@ -75,6 +75,7 @@ export default function Items({ propertyId, readOnly }: { propertyId: string; re
               <span className="item-title">{i.title_ja || "(題名なし)"}</span>
               <span className="muted small">{DISPLAY_LABEL[i.display]}</span>
               {!i.is_published && <span className="badge">非公開</span>}
+              {i.requires_code && <span className="badge code">滞在コードで表示</span>}
             </button>
             {!readOnly && (
               <span className="move">

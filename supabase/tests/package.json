@@ -2,6 +2,10 @@
   "name": "mimpaku-sql-tests",
   "private": true,
   "type": "module",
-  "scripts": { "test": "node rls.test.mjs" },
-  "devDependencies": { "@electric-sql/pglite": "*" }
+  "scripts": {
+    "test": "node rls.test.mjs && node stay-code.test.mjs"
+  },
+  "devDependencies": {
+    "@electric-sql/pglite": "*"
+  }
 }

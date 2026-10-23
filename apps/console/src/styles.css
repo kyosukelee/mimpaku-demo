@@ -80,3 +80,4 @@ label.check.big input { width: 28px; height: 28px; flex: none; }
 .back { margin-top: 12px; }
 button.wide { width: 100%; min-height: 56px; font-size: 18px; }
 [hidden] { display: none !important; }
+.badge.code { background: #e7f1fb; color: var(--seto-deep); }

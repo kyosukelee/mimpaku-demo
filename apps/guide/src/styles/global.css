@@ -108,3 +108,17 @@ details p { margin: 0 0 16px; }
   .hero .river path { stroke-dasharray: 1400; stroke-dashoffset: 1400; animation: flow 2.4s ease-out forwards; }
   @keyframes flow { to { stroke-dashoffset: 0; } }
 }
+
+/* 滞在コード */
+.code-box { background: var(--mist); border: 1px solid var(--line); border-radius: 12px; padding: 16px 18px; margin: 20px 0 8px; }
+.code-box h2 { margin: 0 0 6px; padding: 0; border: 0; font-size: 20px; }
+.code-box p { margin: 0 0 10px; }
+.code-box label { display: block; font-size: 15px; color: var(--ink-soft); }
+.code-row { display: flex; gap: 10px; margin-top: 4px; }
+.code-row input { flex: 1; min-width: 0; font: inherit; font-size: 20px; letter-spacing: 0.08em; text-transform: uppercase; padding: 8px 12px; min-height: 48px; border: 1px solid #b9c9d4; border-radius: 8px; background: #fff; color: var(--ink); }
+.code-row .btn { border: 0; cursor: pointer; font: inherit; font-weight: 700; }
+.code-msg { min-height: 1.5em; margin: 8px 0 0 !important; font-size: 15px; font-weight: 700; color: #b3261e; }
+.code-msg.busy { color: var(--ink-soft); font-weight: 400; }
+.code-box.shown { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; border-color: var(--seto); }
+.code-box.shown p { margin: 0; font-weight: 700; color: var(--seto-deep); }
+.code-box.shown .btn { min-height: 44px; font: inherit; font-size: 15px; cursor: pointer; }

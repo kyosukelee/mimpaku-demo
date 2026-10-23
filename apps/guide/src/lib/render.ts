@@ -54,11 +54,26 @@ export interface Rendered {
   main: string;
 }
 
-export function renderPage(page: Page, lang: Lang, data: GuideData): Rendered {
+export interface RenderOptions {
+  unlocked?: boolean; // 滞在コードで、鍵などの伏せた項目を表示しているか
+}
+
+function codeBox(lang: Lang, unlocked: boolean): string {
+  const s = ui[lang];
+  if (unlocked) {
+    return `<div class="code-box shown" id="stay-code"><p>${esc(s.codeShown)}</p><button type="button" class="btn ghost" data-action="forget-code">${esc(s.codeForget)}</button></div>`;
+  }
+  return `<form class="code-box" id="stay-code" data-action="stay-code" novalidate><h2>${esc(s.codeTitle)}</h2><p>${esc(s.codeLead)}</p>` +
+    `<label for="stay-code-input">${esc(s.codeLabel)}</label><div class="code-row">` +
+    `<input id="stay-code-input" name="code" autocomplete="off" autocapitalize="characters" spellcheck="false" maxlength="40" />` +
+    `<button class="btn" type="submit">${esc(s.codeButton)}</button></div><p class="code-msg" role="status" aria-live="polite"></p></form>`;
+}
+
+export function renderPage(page: Page, lang: Lang, data: GuideData, opts: RenderOptions = {}): Rendered {
   const s = ui[lang];
   const { property: p } = data;
   const items = [...data.items]
-    .filter((i) => i.is_published && !i.requires_code)
+    .filter((i) => i.is_published && (opts.unlocked || !i.requires_code))
     .sort((a, b) => a.sort_order - b.sort_order);
   const by = (c: string) => items.filter((i) => i.category === c);
 
@@ -76,7 +91,7 @@ export function renderPage(page: Page, lang: Lang, data: GuideData): Rendered {
     const sections = by("checkin")
       .map((i) => `<h2>${esc(pick(i, "title", lang))}</h2>${renderBody(i, lang)}`)
       .join("");
-    return { main: `<h1 class="page">${esc(s.menu.checkin)}</h1>${sections}` };
+    return { main: `<h1 class="page">${esc(s.menu.checkin)}</h1>${codeBox(lang, !!opts.unlocked)}${sections}` };
   }
 
   if (page === "nearby") {

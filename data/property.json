@@ -24,7 +24,7 @@
       "body_ja": "建物の入口で、部屋番号の呼び出しは不要です。そのまま中へお進みください。\n玄関ドアの横に黒いキーボックスがあります。\n暗証番号「0000」(デモ用)を入れて、鍵を取り出してください。\nチェックアウトのときは、鍵をキーボックスに戻してください。",
       "body_en": "You do not need to ring the bell at the building entrance. Please go straight in.\nThere is a black key box next to the front door.\nEnter the code “0000” (demo only) and take out the key.\nAt check-out, put the key back in the key box.",
       "map_query": null,
-      "requires_code": false,
+      "requires_code": true,
       "is_published": true
     },
     {
@@ -36,7 +36,7 @@
       "body_ja": "Wi-Fi名: StayNaka-Demo\nパスワード: demo-wifi-0000",
       "body_en": "Wi-Fi name: StayNaka-Demo\nPassword: demo-wifi-0000",
       "map_query": null,
-      "requires_code": false,
+      "requires_code": true,
       "is_published": true
     },
     {

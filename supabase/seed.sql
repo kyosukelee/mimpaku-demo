@@ -11,10 +11,10 @@ select * from (values
 チェックアウトのときは、鍵をキーボックスに戻してください。', 'You do not need to ring the bell at the building entrance. Please go straight in.
 There is a black key box next to the front door.
 Enter the code “0000” (demo only) and take out the key.
-At check-out, put the key back in the key box.', null, false, true),
+At check-out, put the key back in the key box.', null, true, true),
   ((select id from public.properties where slug = 'hiroshima-demo'), 'checkin', 'keyvalue', 20, 'Wi-Fi', 'Wi-Fi', 'Wi-Fi名: StayNaka-Demo
 パスワード: demo-wifi-0000', 'Wi-Fi name: StayNaka-Demo
-Password: demo-wifi-0000', null, false, true),
+Password: demo-wifi-0000', null, true, true),
   ((select id from public.properties where slug = 'hiroshima-demo'), 'checkin', 'bullets', 30, '家のルール', 'House rules', '22時から朝8時までは、お静かにお過ごしください。
 室内は禁煙です。
 ご案内の人数を超えての宿泊はできません。

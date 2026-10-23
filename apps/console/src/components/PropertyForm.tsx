@@ -77,6 +77,13 @@ export default function PropertyForm({ property, staff, readOnly, onSaved }: Pro
           <textarea rows={8} value={draft.checklist_template} onChange={(e) => setDraft({ ...draft, checklist_template: e.target.value })} />
         </label>
         <p className="muted">予約を登録すると、この内容と担当で清掃タスクができます。すでにあるタスクは変わりません。</p>
+
+        <h2 className="section">滞在コード</h2>
+        <label>
+          デモ用の滞在コード(期限なし)
+          <input value={draft.demo_stay_code ?? ""} onChange={(e) => setDraft({ ...draft, demo_stay_code: e.target.value.toUpperCase() })} />
+        </label>
+        <p className="muted">営業やデモで、宿泊者ガイドの鍵・Wi-Fiの表示を試すためのコードです。空にすると使えなくなります。予約ごとのコードは、チェックアウト日まで有効です。</p>
       </fieldset>
       <p className="muted">URLの名前(slug): <code>{property.slug}</code>(変更できません)</p>
       {msg && <p className={msg.ok ? "ok" : "error"} role="status">{msg.text}</p>}

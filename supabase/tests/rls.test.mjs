@@ -122,7 +122,7 @@ ok("storage: 担当スタッフは自分の写真を消せる", (await as("authe
 ok("bucketは非公開・5MB・画像のみ", (await db.query(`select public, file_size_limit from storage.buckets where id='cleaning-photos'`)).rows[0].public === false);
 
 // ── 既存(第2段階)の動作は変わらない ──
-ok("anon: 公開ガイドは今までどおり読める", await n("anon","", "guide_items") === 15);
+ok("anon: 公開ガイドは読める(鍵とWi-Fiは滞在コード用に伏せて13件)", await n("anon","", "guide_items") === 13);
 ok("staff: 案内項目の編集はできない", (await as("authenticated", U.staff, `update guide_items set title_ja='x'`), (await db.query("select count(*)::int c from guide_items where title_ja='x'")).rows[0].c === 0));
 console.log(fails === 0 ? "\n全部通りました" : `\n${fails} 件失敗`);
 process.exit(fails ? 1 : 0);

@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { supabase } from "../supabase";
-import { STATUS_LABEL } from "../types";
+import { PHOTO_BUCKET, STATUS_LABEL } from "../types";
 import type { Staff, Stay, Task } from "../types";
 import { fmtDateTime, isOverdue, progress } from "../lib/format";
 import { usePhotoUrls } from "../lib/photos";
@@ -16,6 +16,23 @@ function TaskDetail({ task, staff, stay, readOnly, onChanged }: { task: Task; st
     const { error } = await supabase.from("cleaning_tasks").update({ assigned_staff: id || null }).eq("id", task.id);
     if (error) setError("担当を変更できませんでした。"); else { setError(""); onChanged(); }
   }
+  // チェック・写真・申し送りを消して、未着手に戻す(デモを最初から繰り返すとき)
+  async function restart() {
+    if (!window.confirm("チェックを外し、写真と申し送りも消して、最初の状態に戻します。元に戻せません。よろしいですか?")) return;
+    if (task.photo_paths.length > 0) {
+      const rm = await supabase.storage.from(PHOTO_BUCKET).remove(task.photo_paths);
+      if (rm.error) { setError("写真を消せませんでした。"); return; }
+    }
+    const { error } = await supabase.from("cleaning_tasks").update({
+      status: "pending",
+      checklist: task.checklist.map((c) => ({ ...c, done: false })),
+      photo_paths: [],
+      note: "",
+    }).eq("id", task.id);
+    if (error) setError("最初の状態に戻せませんでした。"); else { setError(""); onChanged(); }
+  }
+  const hasProgress = task.status !== "pending" || task.photo_paths.length > 0 || task.note !== "" || task.checklist.some((c) => c.done);
+
   async function reopen() {
     if (!window.confirm("このタスクを未完了に戻します。よろしいですか?")) return;
     const { error } = await supabase.from("cleaning_tasks").update({ status: "pending" }).eq("id", task.id);
@@ -45,7 +62,12 @@ function TaskDetail({ task, staff, stay, readOnly, onChanged }: { task: Task; st
           : <span key={p} className="ph muted">読み込み中…</span>)}
       </div>
       {error && <p className="error" role="alert">{error}</p>}
-      {!readOnly && task.status === "done" && <button className="small" onClick={reopen}>未完了に戻す</button>}
+      {!readOnly && (task.status === "done" || hasProgress) && (
+        <div className="actions">
+          {task.status === "done" && <button className="small" onClick={reopen}>未完了に戻す(チェック・写真は残す)</button>}
+          {hasProgress && <button className="small danger" onClick={restart}>最初からやり直す</button>}
+        </div>
+      )}
     </div>
   );
 }

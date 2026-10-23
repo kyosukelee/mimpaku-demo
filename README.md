@@ -7,14 +7,18 @@
 
 ## いまの段階
 
-**第3段階-1:清掃とスタッフ用PWA**(LINE通知は3-2、滞在コードは3-3)
+**第3段階:清掃・スタッフ用PWA・滞在コード**
+
+- **滞在コード**: 宿泊者ガイドの鍵とWi-Fiは、予約ごとの滞在コードを入れた人にだけ表示する。照合はサーバー側の関数(Cloudflare Pages Functions)で行い、正しいコードの一覧は画面に一切渡さない
 
 - 管理者が予約(架空)のチェックアウト日を登録すると、その日の**清掃タスクが自動でできる**(期限は日本時間のチェックイン時刻)
 - 清掃スタッフは、スマホのPWAで「今日の清掃」を開き、**チェックリスト・写真・完了報告**を行う
 - 管理者・オーナーは、清掃の状況(未完了・期限超過・完了写真)を見られる
 - **閲覧専用のデモ用アカウント**で、営業先や業務委託の相手が、変更はできない状態で実際に触れる
 - 電波が弱い現場のために、**画面の枠のキャッシュ**と**入力途中の端末保存**に対応(電波が戻ると自動で送る)
+- 管理者は、清掃を「最初からやり直す」(チェック・写真・申し送りを消す)ことも、「未完了に戻す」(チェック・写真は残す)こともできる
 - 第2段階: Supabase化と管理画面 / 第1段階: 宿泊者ガイド(日本語・英語)
+- LINE通知は、検討のうえ採用しなかった(清掃の完了は、管理者とオーナーが画面で確認する)
 
 ![スタッフの作業画面](docs/screenshot-staff-work.png)
 
@@ -26,16 +30,17 @@
 | React + Vite(PWA) | 管理画面・スタッフ画面 | 入力と一覧の操作が多い画面に向く。ホーム画面に追加して使える |
 | Supabase | データ・ログイン・写真 | 行単位の権限(RLS)で、立場ごとに見せる範囲を分けられる |
 | Cloudflare Pages | 公開 | 無料枠で、ガイドと管理画面を別々に公開できる |
+| Cloudflare Pages Functions | 滞在コードの照合 | 鍵(Supabaseの secret key)を画面に出さずに、サーバー側で処理できる |
 
 清掃スタッフ用を、PWAにするかFlutterにするかは比べて決めました。
-通知は(PWAが弱いiPhoneの通知ではなく)LINEで送る設計で、必要な機能(カメラ・チェックリスト・送信)はPWAで足りるため、PWAにしています。
+必要な機能(カメラ・チェックリスト・送信)はPWAで足り、URLを送るだけで使ってもらえるため、PWAにしています(iPhoneのPWAが苦手な通知は、使わない設計です)。
 実運用で、通知や裏での処理が足りなくなったり、BluetoothやNFCの機器と連携したくなったりしたら、データ(Supabase)はそのままで画面だけFlutterに作り替えられます。
 
 ## 権限(RLS)
 
 | 立場 | 読める | 書ける |
 |---|---|---|
-| 宿泊者(未ログイン) | 公開中の物件と、公開中かつ滞在コード不要の項目 | なし |
+| 宿泊者(未ログイン) | 公開中の物件と、公開中かつ滞在コード不要の項目。鍵・Wi-Fiは、関数で滞在コードを照合したときだけ | なし |
 | admin | すべて | すべて |
 | viewer(閲覧専用) | すべて(スタッフのメール・LINE IDは除く) | なし |
 | owner | 自分の物件の清掃の状況と写真 | なし |
@@ -45,6 +50,18 @@
 - スタッフが変えてよい項目の制限と、完了の条件(チェックが全部ついている・写真が1枚以上)は、**データベース側のトリガー**で守ります。画面を通さず直接APIをたたいても、守られます。
 - 写真は非公開のバケットに置き、期限つきのURLで見せます。保存先は「タスクのID/ファイル名」で、タスクの担当者・オーナー・admin・viewerだけが読めます。
 - 写真は、端末側で長辺1600pxまで縮めてから送ります(保存容量と通信量を減らす)。
+
+## 滞在コードのしくみ
+
+1. 宿泊者がチェックイン案内で滞在コードを入れると、ガイドは `/api/stay-code`(Cloudflare Pages Functions)に送る。
+2. 関数は、Supabaseのデータベース関数 `verify_stay_code` を **secret key** で呼ぶ。この関数は secret key でしか呼べない(未ログイン・ログイン済みの利用者からは呼べない)。
+3. データベース関数が、コードと有効期限(**チェックアウト日まで**)を照合し、正しければ「滞在コードが必要」な項目(鍵・Wi-Fi)だけを返す。
+4. 同じ接続元で15分以内に10回まちがえると、しばらく受け付けない(総当たりの防止)。照合の記録は、画面からは読めない。
+5. 入れたコードは宿泊者の端末に覚え、次からは自動で表示する。期限が切れたら、端末のコードも消す。
+
+- 鍵とWi-Fiの値は、ページのHTMLやJSに最初から含めない(ビルド時の静的な表示からも外す)。
+- 物件ごとに、期限のない**デモ用の滞在コード**を1つ設定できる(デモ物件は `DEMO-2026`)。営業やデモで、鍵の表示を試してもらうためのもので、空にすると使えなくなる。
+
 
 ## 作り方の分担
 
@@ -68,7 +85,8 @@
 7. `supabase/seed_stage3.sql` を実行する(清掃のチェックリストのひな型と、予約3件。日付は実行した日が基準)。
 8. **Storage** に、非公開のバケット `cleaning-photos` ができていることを確認する。
 9. **Authentication** で、新規ユーザー登録(Allow new users to sign up)をオフにする。
-10. **Project Settings → API Keys** から、`Project URL` と **Publishable key**(`sb_publishable_...`)を控える。`secret` / `service_role` は使わない。
+10. `supabase/stage3_3.sql` を実行する(滞在コードの照合・デモ用コード・鍵とWi-Fiを伏せる設定)。
+11. **Project Settings → API Keys** から、`Project URL`、**Publishable key**(`sb_publishable_...`)、**Secret key**(`sb_secret_...`)を控える。Secret key は、ガイドの関数(Cloudflareの秘密の環境変数)にだけ入れ、GitHub・画面・スクリーンショットには絶対に出さない。
 
 ### 2. 宿泊者ガイド(Cloudflare Pages: `mimpaku-demo`)
 
@@ -80,6 +98,9 @@
 | `NODE_VERSION` | `22` |
 | `PUBLIC_SUPABASE_URL` | Project URL(`https://〇〇.supabase.co`。末尾に何も付けない) |
 | `PUBLIC_SUPABASE_ANON_KEY` | Publishable key |
+| `SUPABASE_SECRET_KEY` | Secret key(種類は **Secret**。値が暗号化され、あとから見えなくなる) |
+
+`SUPABASE_SECRET_KEY` は、滞在コードを照合する関数(`apps/guide/functions/api/stay-code.js`)だけが使う。追加・変更したら、再デプロイする。
 
 ### 3. 管理画面(Cloudflare Pages: `mimpaku-console`)
 
@@ -122,7 +143,7 @@ npm.cmd run dev
 
 ## テスト
 
-`supabase/tests/` に、SQLとRLSのテストがあります(本物のPostgresで、立場ごとの読み書きの範囲を確認)。
+`supabase/tests/` に、SQLとRLSのテストがあります(本物のPostgresで、立場ごとの読み書きの範囲と、滞在コードの照合・総当たりの防止を確認)。
 
 ```
 cd supabase/tests
@@ -150,10 +171,10 @@ node supabase/gen-seed.mjs
 ## フォルダ構成
 
 ```
-apps/guide/     宿泊者ガイド(Astro)
-apps/console/   管理画面・オーナー画面・スタッフ画面(React + Vite、PWA)
-data/           架空データ(property.json)
-functions/      サーバー側の関数(第3段階-2・3で使う)
-supabase/       schema.sql / seed.sql / stage3_1.sql / create-*.sql / seed_stage3.sql / tests/
-docs/           設計書、スクリーンショット、QRコード
+apps/guide/              宿泊者ガイド(Astro)
+apps/guide/functions/    サーバー側の関数(滞在コードの照合)
+apps/console/            管理画面・オーナー画面・スタッフ画面(React + Vite、PWA)
+data/                    架空データ(property.json)
+supabase/                schema.sql / seed.sql / stage3_1.sql / stage3_3.sql / create-*.sql / seed_stage3.sql / tests/
+docs/                    設計書、スクリーンショット、QRコード
 ```

@@ -8,7 +8,11 @@ export const getStaticPaths = paths;
 const lang = Astro.params.lang as Lang;
 const s = t(lang);
 const out = renderPage("checkin", lang, staticData);
+// 伏せる項目(鍵・Wi-Fi)は、ページにも埋め込まない
+const publicData = { property: staticData.property, items: staticData.items.filter((i) => !i.requires_code) };
+const publicJson = JSON.stringify(publicData).replace(/</g, "\\u003c");
 ---
 <Guide lang={lang} page="checkin" title={s.menu.checkin}>
   <div id="content" set:html={out.main} />
+  <script is:inline type="application/json" id="guide-static" set:html={publicJson} />
 </Guide>

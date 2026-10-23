@@ -18,6 +18,7 @@ export interface Property {
   is_published: boolean;
   checklist_template: string;
   default_staff_id: string | null;
+  demo_stay_code: string;
 }
 
 export interface Item {

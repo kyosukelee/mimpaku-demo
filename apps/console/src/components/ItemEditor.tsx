@@ -46,6 +46,11 @@ export default function ItemEditor({ item, readOnly, onCancel, onDone }: { item:
         <input type="checkbox" checked={d.is_published} onChange={(e) => set("is_published", e.target.checked)} />
         公開する
       </label>
+      <label className="check">
+        <input type="checkbox" checked={d.requires_code} onChange={(e) => set("requires_code", e.target.checked)} />
+        滞在コードが必要(鍵・Wi-Fiなど)
+      </label>
+      <p className="muted">オンにすると、宿泊者ガイドでは、滞在コードを入れた人にだけ表示されます。</p>
       <label>題名(日本語)<input value={d.title_ja} onChange={(e) => set("title_ja", e.target.value)} /></label>
       <label>題名(英語)<input value={d.title_en} onChange={(e) => set("title_en", e.target.value)} /></label>
       <label>
