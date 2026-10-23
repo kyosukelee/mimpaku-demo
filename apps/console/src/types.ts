@@ -16,6 +16,8 @@ export interface Property {
   emergency_note_ja: string;
   emergency_note_en: string;
   is_published: boolean;
+  checklist_template: string;
+  default_staff_id: string | null;
 }
 
 export interface Item {
@@ -53,3 +55,55 @@ export const DISPLAY_HINT: Record<Display, string> = {
   bullets: "1行に1項目を書きます。",
   keyvalue: "「ラベル: 値」の形で1行ずつ書きます。値にコピーボタンがつきます。",
 };
+
+export type Role = "admin" | "owner" | "staff" | "viewer";
+export type TaskStatus = "pending" | "in_progress" | "done";
+
+export interface ChecklistItem {
+  text: string;
+  done: boolean;
+}
+
+export interface Stay {
+  id: string;
+  property_id: string;
+  checkout_date: string;
+  label: string;
+  stay_code: string;
+  created_at: string;
+}
+
+export interface Task {
+  id: string;
+  property_id: string;
+  stay_id: string | null;
+  scheduled_at: string;
+  assigned_staff: string | null;
+  checklist: ChecklistItem[];
+  photo_paths: string[];
+  status: TaskStatus;
+  completed_at: string | null;
+  note: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface Staff {
+  id: string;
+  display_name: string;
+}
+
+export const ROLE_LABEL: Record<Role, string> = {
+  admin: "管理者",
+  owner: "オーナー",
+  staff: "清掃スタッフ",
+  viewer: "閲覧専用",
+};
+
+export const STATUS_LABEL: Record<TaskStatus, string> = {
+  pending: "未着手",
+  in_progress: "作業中",
+  done: "完了",
+};
+
+export const PHOTO_BUCKET = "cleaning-photos";

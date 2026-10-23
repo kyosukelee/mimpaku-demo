@@ -8,3 +8,10 @@ createRoot(document.getElementById("root")!).render(
     <App />
   </React.StrictMode>
 );
+
+// 画面の枠をキャッシュして、ホーム画面から開いたときに電波が弱くても画面が出るようにする
+if ("serviceWorker" in navigator && import.meta.env.PROD) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("/sw.js").catch(() => { /* 登録できなくてもアプリは使える */ });
+  });
+}

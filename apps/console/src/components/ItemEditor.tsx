@@ -5,7 +5,7 @@ import type { Display, Item } from "../types";
 
 const DISPLAYS = Object.keys(DISPLAY_LABEL) as Display[];
 
-export default function ItemEditor({ item, onCancel, onDone }: { item: Item; onCancel: () => void; onDone: () => void }) {
+export default function ItemEditor({ item, readOnly, onCancel, onDone }: { item: Item; readOnly: boolean; onCancel: () => void; onDone: () => void }) {
   const [d, setD] = useState<Item>(item);
   const [msg, setMsg] = useState("");
   const [busy, setBusy] = useState(false);
@@ -15,6 +15,7 @@ export default function ItemEditor({ item, onCancel, onDone }: { item: Item; onC
 
   async function save(e: React.FormEvent) {
     e.preventDefault();
+    if (readOnly) return;
     if (!d.title_ja.trim()) { setMsg("題名(日本語)を入力してください。"); return; }
     setBusy(true);
     setMsg("");
@@ -39,7 +40,8 @@ export default function ItemEditor({ item, onCancel, onDone }: { item: Item; onC
 
   return (
     <form className="card" onSubmit={save}>
-      <h2>{isNew ? "項目を追加" : "項目を編集"}<span className="muted small">({CATEGORY_LABEL[d.category]})</span></h2>
+      <h2>{isNew ? "項目を追加" : readOnly ? "項目を見る" : "項目を編集"}<span className="muted small">({CATEGORY_LABEL[d.category]})</span></h2>
+      <fieldset disabled={readOnly}>
       <label className="check">
         <input type="checkbox" checked={d.is_published} onChange={(e) => set("is_published", e.target.checked)} />
         公開する
@@ -62,11 +64,12 @@ export default function ItemEditor({ item, onCancel, onDone }: { item: Item; onC
           <input value={d.map_query ?? ""} onChange={(e) => set("map_query", e.target.value)} placeholder="例: 平和記念公園 広島" />
         </label>
       )}
+      </fieldset>
       {msg && <p className="error" role="alert">{msg}</p>}
       <div className="actions">
-        <button className="primary" type="submit" disabled={busy}>{busy ? "保存中…" : "保存する"}</button>
-        <button type="button" onClick={onCancel} disabled={busy}>キャンセル</button>
-        {!isNew && <button type="button" className="danger" onClick={remove} disabled={busy}>削除</button>}
+        {!readOnly && <button className="primary" type="submit" disabled={busy}>{busy ? "保存中…" : "保存する"}</button>}
+        <button type="button" onClick={onCancel} disabled={busy}>{readOnly ? "閉じる" : "キャンセル"}</button>
+        {!isNew && !readOnly && <button type="button" className="danger" onClick={remove} disabled={busy}>削除</button>}
       </div>
     </form>
   );

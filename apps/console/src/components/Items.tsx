@@ -6,7 +6,7 @@ import ItemEditor from "./ItemEditor";
 
 const CATEGORIES = Object.keys(CATEGORY_LABEL) as Category[];
 
-export default function Items({ propertyId }: { propertyId: string }) {
+export default function Items({ propertyId, readOnly }: { propertyId: string; readOnly: boolean }) {
   const [items, setItems] = useState<Item[] | null>(null);
   const [cat, setCat] = useState<Category>("checkin");
   const [editing, setEditing] = useState<Item | null>(null);
@@ -50,6 +50,7 @@ export default function Items({ propertyId }: { propertyId: string }) {
     return (
       <ItemEditor
         item={editing}
+        readOnly={readOnly}
         onCancel={() => setEditing(null)}
         onDone={async () => { setEditing(null); await load(); }}
       />
@@ -75,14 +76,16 @@ export default function Items({ propertyId }: { propertyId: string }) {
               <span className="muted small">{DISPLAY_LABEL[i.display]}</span>
               {!i.is_published && <span className="badge">非公開</span>}
             </button>
-            <span className="move">
-              <button className="small" aria-label="上へ" disabled={idx === 0} onClick={() => move(idx, -1)}>↑</button>
-              <button className="small" aria-label="下へ" disabled={idx === list.length - 1} onClick={() => move(idx, 1)}>↓</button>
-            </span>
+            {!readOnly && (
+              <span className="move">
+                <button className="small" aria-label="上へ" disabled={idx === 0} onClick={() => move(idx, -1)}>↑</button>
+                <button className="small" aria-label="下へ" disabled={idx === list.length - 1} onClick={() => move(idx, 1)}>↓</button>
+              </span>
+            )}
           </li>
         ))}
       </ul>
-      <button className="primary" onClick={startNew}>この区分に項目を追加</button>
+      {!readOnly && <button className="primary" onClick={startNew}>この区分に項目を追加</button>}
     </section>
   );
 }
