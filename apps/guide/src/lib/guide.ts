@@ -1,6 +1,6 @@
 // ガイドのデータ型。Supabaseのテーブル(properties / guide_items)と同じ形。
 export type Lang = "ja" | "en";
-export type Page = "home" | "checkin" | "nearby" | "help";
+export type Page = "home" | "checkin" | "nearby" | "ask" | "help";
 export type Category = "checkin" | "nearby" | "faq" | "urgent";
 export type Display = "text" | "steps" | "bullets" | "keyvalue";
 

@@ -1,0 +1,14 @@
+---
+import Guide from "../../../../layouts/Guide.astro";
+import { t, paths } from "../../../../i18n";
+import { renderPage } from "../../../../lib/render";
+import { staticData } from "../../../../lib/staticData";
+import type { Lang } from "../../../../lib/guide";
+export const getStaticPaths = paths;
+const lang = Astro.params.lang as Lang;
+const s = t(lang);
+const out = renderPage("ask", lang, staticData);
+---
+<Guide lang={lang} page="ask" title={s.menu.ask}>
+  <div id="content" set:html={out.main} />
+</Guide>

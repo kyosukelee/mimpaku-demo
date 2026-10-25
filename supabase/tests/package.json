@@ -3,7 +3,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "test": "node rls.test.mjs && node stay-code.test.mjs"
+    "test": "node rls.test.mjs && node stay-code.test.mjs && node ai.test.mjs"
   },
   "devDependencies": {
     "@electric-sql/pglite": "*"

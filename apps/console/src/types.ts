@@ -108,3 +108,17 @@ export const STATUS_LABEL: Record<TaskStatus, string> = {
 };
 
 export const PHOTO_BUCKET = "cleaning-photos";
+
+export interface ChatLog {
+  id: number;
+  property_id: string;
+  created_at: string;
+  lang: "ja" | "en";
+  kind: "ai" | "emergency";
+  question: string;
+  answer: string;
+  answered: boolean;
+  model: string;
+}
+
+export const AI_DAILY_LIMIT = 50; // supabase/stage4.sql の v_daily_limit と同じ値

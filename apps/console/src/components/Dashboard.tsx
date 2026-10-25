@@ -10,9 +10,11 @@ import Items from "./Items";
 import StaysTab from "./StaysTab";
 import TasksTab from "./TasksTab";
 import StaffHome from "./StaffHome";
+import InquiriesTab from "./InquiriesTab";
 
-type Tab = "property" | "items" | "stays" | "tasks";
-const TAB_LABEL: Record<Tab, string> = { property: "物件情報", items: "案内項目", stays: "予約", tasks: "清掃状況" };
+type Tab = "property" | "items" | "stays" | "tasks" | "inquiries";
+const TAB_LABEL: Record<Tab, string> = { property: "物件情報", items: "案内項目", stays: "予約", tasks: "清掃状況", inquiries: "問い合わせ" };
+type OwnerTab = "tasks" | "inquiries";
 const ROLES: Role[] = ["admin", "owner", "staff", "viewer"];
 
 export default function Dashboard({ session }: { session: Session }) {
@@ -22,6 +24,7 @@ export default function Dashboard({ session }: { session: Session }) {
   const [staff, setStaff] = useState<Staff[]>([]);
   const [error, setError] = useState("");
   const [tab, setTab] = useState<Tab>("property");
+  const [ownerTab, setOwnerTab] = useState<OwnerTab>("tasks");
 
   useEffect(() => {
     let alive = true;
@@ -111,9 +114,17 @@ export default function Dashboard({ session }: { session: Session }) {
                 {tab === "items" && <Items propertyId={property.id} readOnly={readOnly} />}
                 {tab === "stays" && <StaysTab propertyId={property.id} readOnly={readOnly} />}
                 {tab === "tasks" && <TasksTab propertyId={property.id} readOnly={readOnly} />}
+                {tab === "inquiries" && <InquiriesTab propertyId={property.id} showUsage />}
               </>
             ) : (
-              <TasksTab propertyId={property.id} readOnly />
+              <>
+                <div className="tabs" role="tablist">
+                  <button role="tab" aria-selected={ownerTab === "tasks"} onClick={() => setOwnerTab("tasks")}>清掃状況</button>
+                  <button role="tab" aria-selected={ownerTab === "inquiries"} onClick={() => setOwnerTab("inquiries")}>問い合わせ</button>
+                </div>
+                {ownerTab === "tasks" && <TasksTab propertyId={property.id} readOnly />}
+                {ownerTab === "inquiries" && <InquiriesTab propertyId={property.id} showUsage={false} />}
+              </>
             )}
           </>
         )}

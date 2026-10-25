@@ -3,7 +3,7 @@ import { staticData } from "../lib/staticData";
 import type { Lang, Page } from "../lib/guide";
 
 export const LANGS: Lang[] = ["ja", "en"];
-export const PAGES: Page[] = ["home", "checkin", "nearby", "help"];
+export const PAGES: Page[] = ["home", "checkin", "nearby", "ask", "help"];
 export type { Lang, Page };
 
 export const t = (lang: Lang) => ui[lang];

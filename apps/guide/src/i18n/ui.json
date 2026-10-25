@@ -10,13 +10,15 @@
       "home": "トップ",
       "checkin": "チェックイン案内",
       "nearby": "周辺案内",
-      "help": "困ったとき"
+      "help": "困ったとき",
+      "ask": "AIに質問"
     },
     "menuShort": {
       "home": "トップ",
       "checkin": "入室",
       "nearby": "周辺",
-      "help": "困った"
+      "help": "困った",
+      "ask": "質問"
     },
     "homeLead": "ご到着前に、こちらをご確認ください。",
     "openMap": "Googleマップで開く",
@@ -39,7 +41,27 @@
     "codeLocked": "まちがいが続いたため、しばらく受け付けていません。時間をおいて試すか、緊急連絡先にお問い合わせください。",
     "codeError": "いまは確認できません。電波のよいところで、もう一度お試しください。",
     "codeShown": "滞在コードで、鍵とWi-Fiを表示しています。",
-    "codeForget": "表示をやめる"
+    "codeForget": "表示をやめる",
+    "askNote": "ガイドの内容をもとに、AIがお答えします。まちがえることもあります。緊急のときは、すぐに119・110へ。",
+    "askPrivacy": "名前や電話番号などは入力しないでください。",
+    "askPlaceholder": "例: チェックアウトは何時ですか?",
+    "askLabel": "質問",
+    "askSend": "送信",
+    "askThinking": "回答を作成しています…",
+    "askExamplesTitle": "質問の例",
+    "askExamples": [
+      "チェックアウトは何時?",
+      "近くのコンビニは?",
+      "ゴミはどう出す?",
+      "宮島への行き方は?"
+    ],
+    "askLimitedIp": "質問が続いたため、しばらく受け付けていません。時間をおいてお試しください。",
+    "askLimitedDay": "本日のAIの受付は終了しました。",
+    "askError": "いまは回答できません。時間をおいてお試しください。",
+    "askTooLong": "質問は300文字までにしてください。",
+    "askHelpLink": "「困ったとき」のページを見る",
+    "askYou": "あなた",
+    "askAi": "AI"
   },
   "en": {
     "lang": "en",
@@ -52,13 +74,15 @@
       "home": "Home",
       "checkin": "Check-in guide",
       "nearby": "Nearby",
-      "help": "Need help"
+      "help": "Need help",
+      "ask": "Ask AI"
     },
     "menuShort": {
       "home": "Home",
       "checkin": "Check-in",
       "nearby": "Nearby",
-      "help": "Help"
+      "help": "Help",
+      "ask": "Ask"
     },
     "homeLead": "Please read this before you arrive.",
     "openMap": "Open in Google Maps",
@@ -81,6 +105,26 @@
     "codeLocked": "Too many wrong attempts. Please try again later, or call the emergency contact.",
     "codeError": "We cannot check the code right now. Please try again where the signal is better.",
     "codeShown": "Showing the entry and Wi-Fi details with your stay code.",
-    "codeForget": "Hide them"
+    "codeForget": "Hide them",
+    "askNote": "AI answers based on this guide. It can make mistakes. In an emergency, call 119 or 110 right away.",
+    "askPrivacy": "Please do not enter your name or phone number.",
+    "askPlaceholder": "e.g. What time is check-out?",
+    "askLabel": "Your question",
+    "askSend": "Send",
+    "askThinking": "Writing an answer…",
+    "askExamplesTitle": "Examples",
+    "askExamples": [
+      "What time is check-out?",
+      "Is there a convenience store nearby?",
+      "How do I take out the trash?",
+      "How do I get to Miyajima?"
+    ],
+    "askLimitedIp": "Too many questions in a short time. Please try again later.",
+    "askLimitedDay": "The AI is not taking more questions today.",
+    "askError": "We cannot answer right now. Please try again later.",
+    "askTooLong": "Please keep your question within 300 characters.",
+    "askHelpLink": "See the “Need help” page",
+    "askYou": "You",
+    "askAi": "AI"
   }
 }

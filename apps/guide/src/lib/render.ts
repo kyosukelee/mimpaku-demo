@@ -78,7 +78,7 @@ export function renderPage(page: Page, lang: Lang, data: GuideData, opts: Render
   const by = (c: string) => items.filter((i) => i.category === c);
 
   if (page === "home") {
-    const menu = (["checkin", "nearby", "help"] as Page[])
+    const menu = (["checkin", "nearby", "ask", "help"] as Page[])
       .map((pg) => `<li><a href="${pageUrl(p.slug, lang, pg)}">${esc(s.menu[pg])}</a></li>`)
       .join("");
     return {
@@ -104,6 +104,25 @@ export function renderPage(page: Page, lang: Lang, data: GuideData, opts: Render
       })
       .join("");
     return { main: `<h1 class="page">${esc(s.menu.nearby)}</h1>${places}` };
+  }
+
+  if (page === "ask") {
+    const chips = (s.askExamples as string[])
+      .map((q) => `<button type="button" class="chip" data-action="ask-example">${esc(q)}</button>`)
+      .join("");
+    return {
+      main:
+        `<h1 class="page">${esc(s.menu.ask)}</h1>` +
+        `<p class="ask-note">${esc(s.askNote)}</p>` +
+        `<div class="ask-examples" aria-label="${esc(s.askExamplesTitle)}">${chips}</div>` +
+        `<div id="chat" class="chat" aria-live="polite"></div>` +
+        `<form id="ask-form" class="ask-form" data-action="ask" novalidate>` +
+        `<label for="ask-input">${esc(s.askLabel)}</label>` +
+        `<textarea id="ask-input" name="question" rows="3" maxlength="300" placeholder="${esc(s.askPlaceholder)}"></textarea>` +
+        `<div class="ask-row"><span class="ask-count">0/300</span><button class="btn" type="submit">${esc(s.askSend)}</button></div>` +
+        `<p class="ask-privacy">${esc(s.askPrivacy)}</p></form>` +
+        `<p class="ask-help"><a href="${pageUrl(p.slug, lang, "help")}">${esc(s.askHelpLink)}</a></p>`,
+    };
   }
 
   // help

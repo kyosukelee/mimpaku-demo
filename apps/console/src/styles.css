@@ -81,3 +81,4 @@ label.check.big input { width: 28px; height: 28px; flex: none; }
 button.wide { width: 100%; min-height: 56px; font-size: 18px; }
 [hidden] { display: none !important; }
 .badge.code { background: #e7f1fb; color: var(--seto-deep); }
+.answer { white-space: pre-wrap; word-break: break-word; margin: 10px 0 0; }
