@@ -18,6 +18,8 @@ export interface PropertyRow {
   emergency_phone: string;
   emergency_note_ja: string;
   emergency_note_en: string;
+  contact_ja?: string;   // 急ぎでない問い合わせ先
+  contact_en?: string;
   is_published: boolean;
 }
 

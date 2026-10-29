@@ -88,3 +88,33 @@ button.wide { width: 100%; min-height: 56px; font-size: 18px; }
 .error-list { list-style: none; padding: 0; margin: 6px 0 0; }
 .error-list li { border-top: 1px solid var(--line); padding: 8px 0; }
 .detail-text { color: var(--ink-soft); word-break: break-all; margin-top: 2px; }
+
+/* 第5段階: 180日・報告 */
+.fy-box { background: var(--paper); border: 1px solid var(--line); border-radius: 12px; padding: 12px 16px; margin: 0 0 16px; }
+.fy-box .meter { height: 10px; background: #e6eef3; border-radius: 999px; overflow: hidden; margin-top: 8px; }
+.fy-box .meter span { display: block; height: 100%; background: var(--seto); }
+.fy-box.warn { border-color: #e8c27a; background: #fff8e8; }
+.fy-box.warn .meter span { background: #c98a12; }
+.fy-box.full { border-color: var(--danger); background: #fdecea; }
+.fy-box.full .meter span { background: var(--danger); }
+.fy-box p { margin: 6px 0 0; font-weight: 700; }
+.two { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.nats { border: 1px solid var(--line) !important; border-radius: 10px; padding: 8px 12px 10px !important; margin-top: 14px !important; }
+.nats legend { font-size: 14px; color: var(--ink-soft); padding: 0 4px; }
+.nat-row { display: grid; grid-template-columns: 1fr 72px auto auto; gap: 8px; align-items: center; margin-bottom: 8px; }
+.nat-row input { margin-top: 0; }
+.row-between { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 12px; }
+label.inline { display: flex; align-items: center; gap: 8px; margin: 0; font-size: 15px; }
+label.inline select { width: auto; margin-top: 0; }
+.table-wrap { overflow-x: auto; background: var(--paper); border: 1px solid var(--line); border-radius: 12px; }
+table.report { border-collapse: collapse; width: 100%; min-width: 620px; font-size: 15px; }
+table.report th, table.report td { padding: 8px 10px; border-bottom: 1px solid var(--line); text-align: left; white-space: nowrap; }
+table.report th { background: var(--mist); font-size: 13px; color: var(--ink-soft); }
+table.report td.num { text-align: right; font-variant-numeric: tabular-nums; }
+table.report tr.now td { background: #fff8e8; }
+table.report .badge { margin-left: 6px; }
+.howto { margin-top: 12px; }
+.howto summary { cursor: pointer; font-weight: 700; color: var(--seto-deep); }
+.howto ul { margin: 8px 0 0; padding-left: 1.2em; font-size: 14px; color: var(--ink-soft); }
+.two { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+.two input { min-width: 0; padding-left: 8px; padding-right: 4px; font-size: 16px; }

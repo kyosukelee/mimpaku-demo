@@ -61,7 +61,9 @@
     "askTooLong": "質問は300文字までにしてください。",
     "askHelpLink": "「困ったとき」のページを見る",
     "askYou": "あなた",
-    "askAi": "AI"
+    "askAi": "AI",
+    "contactTitle": "急ぎでないお問い合わせ",
+    "contactNote": "設備の使い方や周辺のことなど、急ぎでないご質問はこちらへどうぞ。"
   },
   "en": {
     "lang": "en",
@@ -125,6 +127,8 @@
     "askTooLong": "Please keep your question within 300 characters.",
     "askHelpLink": "See the “Need help” page",
     "askYou": "You",
-    "askAi": "AI"
+    "askAi": "AI",
+    "contactTitle": "Non-urgent questions",
+    "contactNote": "For non-urgent questions, such as how to use things or about the area, please contact us here."
   }
 }

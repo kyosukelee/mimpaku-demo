@@ -12,7 +12,9 @@
     "emergency_phone": "000-0000-0000",
     "emergency_note_ja": "管理担当(デモ用の架空の番号です)。受付は24時間。",
     "emergency_note_en": "Property manager (a fictional number for this demo). Available 24 hours.",
-    "is_published": true
+    "is_published": true,
+    "contact_ja": "メール: stay-naka-demo@example.com(架空)\n返信は 9:00〜21:00 です。",
+    "contact_en": "Email: stay-naka-demo@example.com (fictional)\nWe reply between 9:00 and 21:00."
   },
   "items": [
     {

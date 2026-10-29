@@ -16,6 +16,8 @@ const FIELDS: Field[] = [
   { key: "emergency_phone", label: "緊急連絡先の電話番号" },
   { key: "emergency_note_ja", label: "緊急連絡先の説明(日本語)", multiline: true },
   { key: "emergency_note_en", label: "緊急連絡先の説明(英語)", multiline: true },
+  { key: "contact_ja", label: "急ぎでない問い合わせ先(日本語)", multiline: true },
+  { key: "contact_en", label: "急ぎでない問い合わせ先(英語)", multiline: true },
 ];
 
 interface Props {
@@ -63,6 +65,7 @@ export default function PropertyForm({ property, staff, readOnly, onSaved }: Pro
             )}
           </label>
         ))}
+        <p className="muted">急ぎでない問い合わせ先は、ガイドの「困ったとき」に緊急連絡先と分けて表示し、AIも急ぎでない質問はこちらへ案内します(例: メールアドレスと返信の時間帯)。</p>
 
         <h2 className="section">清掃の設定</h2>
         <label>

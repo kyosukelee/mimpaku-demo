@@ -11,10 +11,11 @@ import StaysTab from "./StaysTab";
 import TasksTab from "./TasksTab";
 import StaffHome from "./StaffHome";
 import InquiriesTab from "./InquiriesTab";
+import ReportTab from "./ReportTab";
 
-type Tab = "property" | "items" | "stays" | "tasks" | "inquiries";
-const TAB_LABEL: Record<Tab, string> = { property: "物件情報", items: "案内項目", stays: "予約", tasks: "清掃状況", inquiries: "問い合わせ" };
-type OwnerTab = "tasks" | "inquiries";
+type Tab = "property" | "items" | "stays" | "tasks" | "inquiries" | "report";
+const TAB_LABEL: Record<Tab, string> = { property: "物件情報", items: "案内項目", stays: "予約", tasks: "清掃状況", inquiries: "問い合わせ", report: "報告" };
+type OwnerTab = "tasks" | "inquiries" | "report";
 const ROLES: Role[] = ["admin", "owner", "staff", "viewer"];
 
 export default function Dashboard({ session }: { session: Session }) {
@@ -115,15 +116,18 @@ export default function Dashboard({ session }: { session: Session }) {
                 {tab === "stays" && <StaysTab propertyId={property.id} readOnly={readOnly} />}
                 {tab === "tasks" && <TasksTab propertyId={property.id} readOnly={readOnly} />}
                 {tab === "inquiries" && <InquiriesTab propertyId={property.id} showUsage isAdmin={role === "admin"} />}
+                {tab === "report" && <ReportTab propertyId={property.id} canDownload={role === "admin"} />}
               </>
             ) : (
               <>
                 <div className="tabs" role="tablist">
                   <button role="tab" aria-selected={ownerTab === "tasks"} onClick={() => setOwnerTab("tasks")}>清掃状況</button>
                   <button role="tab" aria-selected={ownerTab === "inquiries"} onClick={() => setOwnerTab("inquiries")}>問い合わせ</button>
+                  <button role="tab" aria-selected={ownerTab === "report"} onClick={() => setOwnerTab("report")}>報告</button>
                 </div>
                 {ownerTab === "tasks" && <TasksTab propertyId={property.id} readOnly />}
                 {ownerTab === "inquiries" && <InquiriesTab propertyId={property.id} showUsage={false} />}
+                {ownerTab === "report" && <ReportTab propertyId={property.id} canDownload />}
               </>
             )}
           </>

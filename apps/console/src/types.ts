@@ -19,6 +19,8 @@ export interface Property {
   checklist_template: string;
   default_staff_id: string | null;
   demo_stay_code: string;
+  contact_ja: string;
+  contact_en: string;
 }
 
 export interface Item {
@@ -65,10 +67,18 @@ export interface ChecklistItem {
   done: boolean;
 }
 
+export interface Nationality {
+  country: string;
+  count: number;
+}
+
 export interface Stay {
   id: string;
   property_id: string;
+  checkin_date: string;
   checkout_date: string;
+  guests: number;
+  nationalities: Nationality[];
   label: string;
   stay_code: string;
   created_at: string;
@@ -145,3 +155,22 @@ export const ERROR_KIND_LABEL: Record<string, string> = {
 };
 
 export const ERROR_SOURCE_LABEL: Record<string, string> = { ask: "AI問い合わせ", "stay-code": "滞在コード" };
+
+export const STAY_LIMIT_DAYS = 180; // 住宅宿泊事業法: 4月1日正午〜翌年4月1日正午に180日まで
+export const COUNTRY_SUGGESTIONS = ["日本", "韓国", "中国", "台湾", "香港", "アメリカ", "オーストラリア", "タイ", "シンガポール", "フランス", "イギリス", "ドイツ", "その他"];
+
+export interface ReportPeriod {
+  start: string;
+  end: string;
+  due: string;
+  nights: number;
+  guests: number;
+  guest_nights: number;
+  nationalities: Record<string, number>;
+}
+
+export interface StayReport {
+  fy_start: string;
+  fy_nights: number;
+  periods: ReportPeriod[];
+}

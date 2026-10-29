@@ -145,3 +145,5 @@ details p { margin: 0 0 16px; }
 .ask-count.over { color: #b3261e; font-weight: 700; }
 .ask-privacy { font-size: 14px; color: var(--ink-soft); margin-top: 6px !important; }
 .ask-help { margin-top: 18px; }
+.panel.contact p { margin: 0 0 6px; font-size: 18px; }
+.panel.contact p:last-child { margin-bottom: 0; }
