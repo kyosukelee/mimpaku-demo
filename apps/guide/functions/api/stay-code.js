@@ -8,7 +8,8 @@ const json = (status, body) =>
     headers: { "Content-Type": "application/json; charset=utf-8", "Cache-Control": "no-store" },
   });
 
-export async function onRequestPost({ request, env }) {
+export async function onRequestPost(context) {
+  const { request, env } = context;
   // URLの末尾に / や /rest/v1 が付いていても動くようにする
   const base = String(env.SUPABASE_URL || env.PUBLIC_SUPABASE_URL || "").replace(/\/+$/, "").replace(/\/rest\/v1$/, "");
   const key = env.SUPABASE_SECRET_KEY;
@@ -28,6 +29,15 @@ export async function onRequestPost({ request, env }) {
   const headers = { apikey: key, "Content-Type": "application/json" };
   if (key.startsWith("eyJ")) headers.Authorization = `Bearer ${key}`;
 
+  // 失敗は error_logs に残す(滞在コードやIPは残さない)
+  const logError = (detail) =>
+    fetch(`${base}/rest/v1/rpc/log_error`, {
+      method: "POST",
+      headers,
+      body: JSON.stringify({ p_source: "stay-code", p_kind: "upstream", p_model: "", p_detail: String(detail).slice(0, 500), p_retried: false }),
+    }).catch(() => undefined);
+  const later = (p) => (typeof context.waitUntil === "function" ? context.waitUntil(p) : p);
+
   let res;
   try {
     res = await fetch(`${base}/rest/v1/rpc/verify_stay_code`, {
@@ -35,10 +45,14 @@ export async function onRequestPost({ request, env }) {
       headers,
       body: JSON.stringify({ p_slug: slug, p_code: code, p_ip: ip }),
     });
-  } catch {
+  } catch (e) {
+    await later(logError(`verify_stay_code に接続できない: ${e && e.message ? e.message : e}`));
     return json(502, { error: "upstream" });
   }
-  if (!res.ok) return json(502, { error: "upstream" });
+  if (!res.ok) {
+    await later(logError(`verify_stay_code: HTTP ${res.status}`));
+    return json(502, { error: "upstream" });
+  }
 
   const r = await res.json();
   switch (r && r.status) {
@@ -46,7 +60,9 @@ export async function onRequestPost({ request, env }) {
     case "invalid": return json(401, { error: "invalid" });
     case "locked": return json(429, { error: "locked" });
     case "not_found": return json(404, { error: "not_found" });
-    default: return json(502, { error: "upstream" });
+    default:
+      await later(logError(`verify_stay_code の返事が想定外: ${String(r && r.status)}`));
+      return json(502, { error: "upstream" });
   }
 }
 

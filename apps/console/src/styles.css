@@ -82,3 +82,9 @@ button.wide { width: 100%; min-height: 56px; font-size: 18px; }
 [hidden] { display: none !important; }
 .badge.code { background: #e7f1fb; color: var(--seto-deep); }
 .answer { white-space: pre-wrap; word-break: break-word; margin: 10px 0 0; }
+.errors h2 { font-size: 17px; }
+.errors details { margin: 6px 0 10px; }
+.errors summary { cursor: pointer; font-weight: 700; color: var(--seto-deep); min-height: 36px; display: flex; align-items: center; }
+.error-list { list-style: none; padding: 0; margin: 6px 0 0; }
+.error-list li { border-top: 1px solid var(--line); padding: 8px 0; }
+.detail-text { color: var(--ink-soft); word-break: break-all; margin-top: 2px; }

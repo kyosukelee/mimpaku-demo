@@ -14,6 +14,8 @@
 - ガイドにないことは推測せず、緊急連絡先を案内する。火事・けが・事故などの言葉には、AIを待たずにすぐ119・110と緊急連絡先を返す
 - 上限は、1日50回(全体)と、1つの端末から1時間に10回。Workers AIは無料枠(1日10,000 Neurons)の範囲で、Claudeに切り替えるときは Claude Console で月の上限額(5ドル)も設定する
 - 質問と回答は管理画面の「問い合わせ」に残り、「答えられなかった質問」をガイドの改善に使う(90日で自動削除)
+- AIの呼び出しが失敗したり、答えが空だったりしたときは、自動で1回やり直す。失敗は「エラーの記録」に30日残り、管理者は「問い合わせ」タブで確認できる
+- 管理者は、問い合わせの記録とエラーの記録を、CSVで手元に保存できる(Excelで開いても計算式として実行されないよう対策済み)
 
 **第3段階:清掃・スタッフ用PWA・滞在コード**
 
@@ -81,7 +83,18 @@
 4. 案内係としてのルール(ガイドの内容だけで答える・同じ言語で答える・わからないことは推測しない・緊急は119/110を最優先)と一緒に、AIに問い合わせる。
    - `AI_PROVIDER` が `workers-ai`(既定)なら、Workers AI の結び付け `AI` で、`AI_MODEL`(既定は `@cf/google/gemma-4-26b-a4b-it`)を呼ぶ。考える過程(`<think>…</think>`)が混ざって返ってきたら取り除く。
    - `AI_PROVIDER` が `claude` なら、`ANTHROPIC_API_KEY` で Claude Haiku 5.5 を呼ぶ。`temperature` などは送らず、`output_config.effort` は `low`。
-5. 質問・回答・答えられたか・画面の言語・答えたモデル名を `chat_logs` に記録する。接続元のIPは記録に残さない。記録は90日で自動削除。
+5. AIの呼び出しが失敗(エラー・時間切れ・空の答え・想定外の返事)したら、1回だけ自動でやり直す。出力の上限は1,200トークン。
+6. 質問・回答・答えられたか・画面の言語・答えたモデル名を `chat_logs` に記録する。接続元のIPは記録に残さない。記録は90日で自動削除。
+
+## エラーの記録
+
+- サーバー側の関数(AI問い合わせ・滞在コード)の失敗を、`error_logs` に残す。種類は「AIのエラー」「答えが空」「時間切れ」「返事の形が想定外」「Supabaseの失敗」「設定不足」と、自動のやり直しで助かった「やり直しで回復」。
+- 残すのは、日時・機能・種類・モデル名・短い説明・やり直したかだけ。**質問の文章・滞在コード・IPアドレス・鍵の値は残さない**。答えが空だったときも、返事の「形」(項目名と長さ)だけを残す。
+- 30日で自動削除。読めるのは管理者だけ(閲覧専用・オーナー・スタッフは読めない)。書き込めるのはサーバー側の関数だけ。
+- 管理画面の「問い合わせ」タブに、今日の失敗の件数(うち回復した件数)と直近の一覧を表示する。長く残したいときは「CSVで保存」ボタンで手元に保存する。
+- 1件300バイトほどなので、30日分でもデータベースの容量はほとんど使わない。
+
+## AI問い合わせの補足
 
 - 上限の回数を変えるときは、`supabase/stage4.sql` の `begin_ai_call` の中の数字(`v_daily_limit`、`v_ip_hourly_limit`)を書き換えて、関数を作り直す。管理画面の表示用に、`apps/console/src/types.ts` の `AI_DAILY_LIMIT` も合わせる。
 - 本物のAIでの確認用の質問は、`docs/ai-test-questions.md` にまとめた。
@@ -108,7 +121,7 @@
 7. `supabase/seed_stage3.sql` を実行する(清掃のチェックリストのひな型と、予約3件。日付は実行した日が基準)。
 8. **Storage** に、非公開のバケット `cleaning-photos` ができていることを確認する。
 9. **Authentication** で、新規ユーザー登録(Allow new users to sign up)をオフにする。
-10. `supabase/stage3_3.sql` を実行する(滞在コードの照合・デモ用コード・鍵とWi-Fiを伏せる設定)。続けて `supabase/stage4.sql`(AI問い合わせの上限・記録)と `supabase/stage4_1.sql`(記録に答えたモデル名を残す)を実行する。
+10. `supabase/stage3_3.sql` を実行する(滞在コードの照合・デモ用コード・鍵とWi-Fiを伏せる設定)。続けて `supabase/stage4.sql`(AI問い合わせの上限・記録)、`supabase/stage4_1.sql`(記録に答えたモデル名を残す)、`supabase/stage4_2.sql`(エラーの記録)を実行する。
 11. **Project Settings → API Keys** から、`Project URL`、**Publishable key**(`sb_publishable_...`)、**Secret key**(`sb_secret_...`)を控える。Secret key は、ガイドの関数(Cloudflareの秘密の環境変数)にだけ入れ、GitHub・画面・スクリーンショットには絶対に出さない。
 
 ### 2. 宿泊者ガイド(Cloudflare Pages: `mimpaku-demo`)
@@ -182,7 +195,7 @@ npm.cmd run dev
 
 ## テスト
 
-`supabase/tests/` に、SQLとRLSのテストがあります(本物のPostgresで、立場ごとの読み書きの範囲、滞在コードの照合・総当たりの防止、AIの上限と記録を確認)。
+`supabase/tests/` に、SQLとRLSのテストがあります(本物のPostgresで、立場ごとの読み書きの範囲、滞在コードの照合・総当たりの防止、AIの上限と記録、エラーの記録を確認)。
 
 ```
 cd supabase/tests
@@ -214,6 +227,6 @@ apps/guide/              宿泊者ガイド(Astro)
 apps/guide/functions/    サーバー側の関数(滞在コードの照合・AI問い合わせ)
 apps/console/            管理画面・オーナー画面・スタッフ画面(React + Vite、PWA)
 data/                    架空データ(property.json)
-supabase/                schema.sql / seed.sql / stage3_1.sql / stage3_3.sql / stage4.sql / stage4_1.sql / create-*.sql / seed_stage3.sql / tests/
+supabase/                schema.sql / seed.sql / stage3_1.sql / stage3_3.sql / stage4.sql / stage4_1.sql / stage4_2.sql / create-*.sql / seed_stage3.sql / tests/
 docs/                    設計書、スクリーンショット、QRコード
 ```

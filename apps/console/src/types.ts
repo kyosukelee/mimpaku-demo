@@ -122,3 +122,26 @@ export interface ChatLog {
 }
 
 export const AI_DAILY_LIMIT = 50; // supabase/stage4.sql の v_daily_limit と同じ値
+
+export interface ErrorLog {
+  id: number;
+  created_at: string;
+  source: "ask" | "stay-code";
+  kind: string;
+  model: string;
+  detail: string;
+  retried: boolean;
+}
+
+export const ERROR_KIND_LABEL: Record<string, string> = {
+  ai_error: "AIのエラー",
+  empty_response: "答えが空",
+  timeout: "時間切れ",
+  unexpected_shape: "返事の形が想定外",
+  upstream: "Supabaseの失敗",
+  not_configured: "設定不足",
+  recovered: "やり直しで回復",
+  other: "その他",
+};
+
+export const ERROR_SOURCE_LABEL: Record<string, string> = { ask: "AI問い合わせ", "stay-code": "滞在コード" };

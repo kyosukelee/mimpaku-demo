@@ -114,7 +114,7 @@ export default function Dashboard({ session }: { session: Session }) {
                 {tab === "items" && <Items propertyId={property.id} readOnly={readOnly} />}
                 {tab === "stays" && <StaysTab propertyId={property.id} readOnly={readOnly} />}
                 {tab === "tasks" && <TasksTab propertyId={property.id} readOnly={readOnly} />}
-                {tab === "inquiries" && <InquiriesTab propertyId={property.id} showUsage />}
+                {tab === "inquiries" && <InquiriesTab propertyId={property.id} showUsage isAdmin={role === "admin"} />}
               </>
             ) : (
               <>

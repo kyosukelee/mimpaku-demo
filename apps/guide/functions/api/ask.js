@@ -6,6 +6,9 @@
 //   claude           : Anthropic の Claude。ANTHROPIC_API_KEY(秘密の環境変数)が必要
 // モデル名は AI_MODEL で上書きできる(モデルの提供終了にも、コードを変えずに対応するため)。
 // 鍵(SUPABASE_SECRET_KEY・ANTHROPIC_API_KEY)は Cloudflare の秘密の環境変数にだけ置く。
+//
+// AIの呼び出しが失敗したり、答えが空だったりしたときは、1回だけ自動でやり直す。
+// 失敗は error_logs に残す(質問の文章・IP・鍵の値は残さない)。
 
 const DEFAULT_MODEL = {
   "workers-ai": "@cf/google/gemma-4-26b-a4b-it", // 2026年10月時点。多言語に強く、無料枠に余裕がある
@@ -22,6 +25,16 @@ const json = (status, body) =>
     status,
     headers: { "Content-Type": "application/json; charset=utf-8", "Cache-Control": "no-store" },
   });
+
+// AIの失敗の種類(error_logs の kind になる)
+class AiFailure extends Error {
+  constructor(kind, detail) { super(detail); this.kind = kind; }
+}
+function classify(e) {
+  if (e instanceof AiFailure) return e;
+  if (e && e.message === "timeout") return new AiFailure("timeout", "時間内に返事がなかった");
+  return new AiFailure("ai_error", String(e && e.message ? e.message : e).slice(0, 300));
+}
 
 // 質問の文字から、答える言語を推定する(緊急の定型文用)
 function detectLang(text, fallback) {
@@ -80,44 +93,58 @@ function withTimeout(promise, ms) {
   ]).finally(() => clearTimeout(timer));
 }
 
+// 返事の「形」だけを短く説明する(中身の文章は記録に残さない)
+function describeShape(out) {
+  if (out === null || out === undefined) return "返事なし";
+  if (typeof out === "string") return `文字列 長さ=${out.length}`;
+  const keys = Object.keys(out).slice(0, 10).join(",");
+  const len = typeof out.response === "string" ? ` response長さ=${out.response.length}` : "";
+  return `keys=${keys}${len}`;
+}
+
 // Cloudflare Workers AI(オープンなモデル)。APIキーは使わず、結び付け env.AI を使う
-async function askWorkersAI(env, model, system, question) {
+async function askWorkersAI(env, model, system, question, timeoutMs) {
   const input = model.startsWith("@cf/openai/gpt-oss")
     ? { instructions: system, input: question }                        // gpt-oss は Responses 形式
-    : { messages: [{ role: "system", content: system }, { role: "user", content: question }], max_tokens: 800 };
-  const out = await withTimeout(env.AI.run(model, input), AI_TIMEOUT_MS);
+    : { messages: [{ role: "system", content: system }, { role: "user", content: question }], max_tokens: 1200 };
+  const out = await withTimeout(env.AI.run(model, input), timeoutMs);
+  const shape = describeShape(out);
   // モデルによって返し方が違うので、よくある形をすべて受け付ける
-  if (typeof out === "string") return out;
-  if (typeof out?.response === "string") return out.response;
+  if (typeof out === "string") return { text: out, shape };
+  if (typeof out?.response === "string") return { text: out.response, shape };
   const choice = out?.choices?.[0]?.message?.content;
-  if (typeof choice === "string") return choice;
-  if (typeof out?.output_text === "string") return out.output_text;
+  if (typeof choice === "string") return { text: choice, shape };
+  if (typeof out?.output_text === "string") return { text: out.output_text, shape };
   if (Array.isArray(out?.output)) {
-    return out.output.flatMap((o) => (Array.isArray(o?.content) ? o.content : []))
+    const text = out.output.flatMap((o) => (Array.isArray(o?.content) ? o.content : []))
       .filter((c) => typeof c?.text === "string" && c.type !== "reasoning_text")
       .map((c) => c.text).join("\n");
+    return { text, shape };
   }
-  throw new Error("unexpected response shape");
+  throw new AiFailure("unexpected_shape", shape);
 }
 
 // Anthropic Claude。temperature などは送らない(Haiku 5.5 では使えない)。考える深さは effort で指定
-async function askClaude(env, model, system, question) {
+async function askClaude(env, model, system, question, timeoutMs) {
   const aiBase = String(env.ANTHROPIC_BASE_URL || "https://api.anthropic.com").replace(/\/+$/, "");
   const res = await withTimeout(fetch(`${aiBase}/v1/messages`, {
     method: "POST",
     headers: { "x-api-key": env.ANTHROPIC_API_KEY, "anthropic-version": "2023-06-01", "content-type": "application/json" },
     body: JSON.stringify({
       model,
-      max_tokens: 1024,
+      max_tokens: 1200,
       output_config: { effort: "low" },
       system,
       messages: [{ role: "user", content: question }],
     }),
-  }), AI_TIMEOUT_MS);
-  if (!res.ok) throw new Error(`HTTP ${res.status}: ${(await res.text()).slice(0, 300)}`);
+  }), timeoutMs);
+  if (!res.ok) throw new AiFailure("ai_error", `HTTP ${res.status}: ${(await res.text()).slice(0, 200)}`);
   const data = await res.json();
-  return (Array.isArray(data?.content) ? data.content : [])
-    .filter((b) => b && b.type === "text").map((b) => b.text).join("\n");
+  const blocks = Array.isArray(data?.content) ? data.content : [];
+  return {
+    text: blocks.filter((b) => b && b.type === "text").map((b) => b.text).join("\n"),
+    shape: `stop_reason=${data?.stop_reason} blocks=${blocks.map((b) => b?.type).join(",")}`,
+  };
 }
 
 export async function onRequestPost(context) {
@@ -126,8 +153,18 @@ export async function onRequestPost(context) {
   const sbKey = env.SUPABASE_SECRET_KEY;
   const provider = env.AI_PROVIDER === "claude" ? "claude" : "workers-ai";
   const model = env.AI_MODEL || DEFAULT_MODEL[provider];
+  const timeoutMs = Number(env.AI_TIMEOUT_MS) || AI_TIMEOUT_MS;
+  const later = (p) => (typeof context.waitUntil === "function" ? context.waitUntil(p) : p);
+  const logError = (kind, detail, retried = false) =>
+    rpc(base, sbKey, "log_error", { p_source: "ask", p_kind: kind, p_model: model, p_detail: String(detail).slice(0, 500), p_retried: retried })
+      .catch((e) => console.error("エラーを記録できませんでした", e));
+
+  if (!base || !sbKey) return json(500, { error: "not_configured" });
   const aiReady = provider === "claude" ? !!env.ANTHROPIC_API_KEY : !!(env.AI && typeof env.AI.run === "function");
-  if (!base || !sbKey || !aiReady) return json(500, { error: "not_configured" });
+  if (!aiReady) {
+    await later(logError("not_configured", provider === "claude" ? "ANTHROPIC_API_KEY がない" : "Workers AI の結び付け(AI)がない"));
+    return json(500, { error: "not_configured" });
+  }
 
   let body;
   try { body = await request.json(); } catch { return json(400, { error: "bad_request" }); }
@@ -138,7 +175,6 @@ export async function onRequestPost(context) {
   if (!question) return json(400, { error: "empty" });
   if (question.length > MAX_QUESTION) return json(400, { error: "too_long" });
 
-  const later = (p) => (typeof context.waitUntil === "function" ? context.waitUntil(p) : p);
   const record = (kind, answer, answered, usedModel = "") =>
     rpc(base, sbKey, "log_chat", { p_slug: slug, p_lang: uiLang, p_kind: kind, p_question: question, p_answer: answer, p_answered: answered, p_model: usedModel })
       .catch((e) => console.error("記録できませんでした", e));
@@ -162,28 +198,47 @@ export async function onRequestPost(context) {
   let gate;
   try {
     gate = await rpc(base, sbKey, "begin_ai_call", { p_slug: slug, p_ip: ip });
-  } catch {
+  } catch (e) {
+    await later(logError("upstream", e && e.message ? e.message : "begin_ai_call に失敗"));
     return json(502, { error: "upstream" });
   }
   if (gate?.status === "not_found") return json(404, { error: "not_found" });
   if (gate?.status === "limited_ip") return json(429, { error: "limited_ip" });
   if (gate?.status === "limited_day") return json(429, { error: "limited_day" });
-  if (gate?.status !== "ok") return json(502, { error: "upstream" });
-
-  // 3) AIに問い合わせる
-  const system = systemPrompt(gate.property, gate.items || []);
-  let raw;
-  try {
-    raw = provider === "claude"
-      ? await askClaude(env, model, system, question)
-      : await askWorkersAI(env, model, system, question);
-  } catch (e) {
-    console.error("AIの呼び出しに失敗", provider, model, e);
-    return json(502, { error: "ai_error" });
+  if (gate?.status !== "ok") {
+    await later(logError("upstream", `begin_ai_call の返事が想定外: ${String(gate?.status)}`));
+    return json(502, { error: "upstream" });
   }
-  // 考える過程(<think>…</think>)が混ざって返ってきたら、取り除いて答えだけにする
-  raw = String(raw || "").replace(/<think>[\s\S]*?<\/think>/gi, "").trim();
-  if (!raw) return json(502, { error: "ai_error" });
+
+  // 3) AIに問い合わせる(失敗・空の答えなら、1回だけやり直す)
+  const system = systemPrompt(gate.property, gate.items || []);
+  const attempt = async () => {
+    const out = provider === "claude"
+      ? await askClaude(env, model, system, question, timeoutMs)
+      : await askWorkersAI(env, model, system, question, timeoutMs);
+    // 考える過程(<think>…</think>)が混ざって返ってきたら、取り除いて答えだけにする
+    const text = String(out.text || "").replace(/<think>[\s\S]*?<\/think>/gi, "").trim();
+    // 「[ANSWERED]」などの印だけで、本文がない場合も「空の答え」とみなす
+    if (!text.replace(/\[(ANSWERED|NOT_ANSWERED)\]/g, "").trim()) throw new AiFailure("empty_response", out.shape);
+    return text;
+  };
+  let raw;
+  let first = null;
+  try {
+    raw = await attempt();
+  } catch (e1) {
+    first = classify(e1);
+    try {
+      raw = await attempt();
+    } catch (e2) {
+      const second = classify(e2);
+      console.error("AIの呼び出しに失敗(2回とも)", provider, model, first.kind, first.message, second.kind, second.message);
+      await later(logError(second.kind, `1回目: ${first.kind} ${first.message} / 2回目: ${second.kind} ${second.message}`, true));
+      return json(502, { error: "ai_error" });
+    }
+    await later(logError("recovered", `1回目: ${first.kind} ${first.message}`, true));
+  }
+
   const m = raw.match(/\[(ANSWERED|NOT_ANSWERED)\]\s*$/);
   const answered = !m || m[1] === "ANSWERED";
   const answer = raw.replace(/\s*\[(ANSWERED|NOT_ANSWERED)\]\s*$/, "").trim();
